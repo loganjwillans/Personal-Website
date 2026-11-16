@@ -41,7 +41,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tag
 <style>
   .page-head {
     padding-block: var(--space-8) var(--space-5);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 2px solid var(--ink);
   }
 
   .back {
@@ -53,6 +53,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tag
   .back:hover {
     color: var(--text);
     text-decoration: underline;
+    text-decoration-color: var(--ink);
     text-underline-offset: 0.25em;
   }
 
@@ -68,5 +69,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tag
 
   .post-list {
     display: grid;
+    gap: var(--space-4);
   }
 </style>

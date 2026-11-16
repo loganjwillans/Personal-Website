@@ -18,12 +18,16 @@ const { title, tradeoff } = Astro.props;
 
 <style>
   .decision {
-    border: 1px solid var(--border);
-    border-inline-start: 3px solid var(--accent);
-    border-radius: var(--radius-md);
+    border: 2px solid var(--ink);
+    border-inline-start-width: 6px;
+    border-inline-start-color: var(--accent-2);
+    border-radius: var(--radius-lg);
     background: var(--surface);
+    background-image: var(--speckle);
+    background-size: var(--speckle-size);
     padding: var(--space-5);
     margin-block: var(--space-5);
+    box-shadow: var(--shadow-key-sm);
   }
 
   .decision__eyebrow {
@@ -31,7 +35,7 @@ const { title, tradeoff } = Astro.props;
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--accent-2-text);
   }
 
   .decision__title {
@@ -52,7 +56,7 @@ const { title, tradeoff } = Astro.props;
   .decision__tradeoff {
     margin-block-start: var(--space-3);
     padding-block-start: var(--space-3);
-    border-block-start: 1px solid var(--border);
+    border-block-start: 2px solid var(--ink);
     font-size: var(--text-sm);
   }
 </style>

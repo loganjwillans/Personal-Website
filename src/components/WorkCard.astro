@@ -63,6 +63,26 @@ const { data, id } = entry;
     flex-direction: column;
     gap: var(--space-4);
     position: relative;
+    background: var(--surface);
+    background-image: var(--speckle);
+    background-size: var(--speckle-size);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-key);
+    transition:
+      transform var(--duration-2) var(--ease),
+      box-shadow var(--duration-2) var(--ease);
+  }
+
+  .card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--shadow-ink);
+  }
+
+  .card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--shadow-ink);
   }
 
   .card__media {
@@ -71,13 +91,22 @@ const { data, id } = entry;
     aspect-ratio: 16 / 10;
     object-fit: cover;
     background: var(--surface-2);
-    border: 1px solid var(--border);
+    border: 2px solid var(--ink);
     border-radius: var(--radius-md);
     transition: transform var(--duration-2) var(--ease);
   }
 
   .card:hover .card__media {
     transform: scale(1.012);
+  }
+
+  .card__media--empty {
+    background: linear-gradient(135deg, var(--surface-2) 50%, var(--bg) 50%);
+  }
+
+  .card__body {
+    display: grid;
+    gap: var(--space-2);
   }
 
   .card__meta {
@@ -87,11 +116,18 @@ const { data, id } = entry;
     gap: var(--space-2);
     font-size: var(--text-xs);
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .card__meta .lock-badge {
+    background: var(--surface-2);
+    border: 1px solid var(--ink);
   }
 
   .card__title {
     font-size: var(--text-lg);
-    margin-block-start: var(--space-2);
+    margin: 0;
     letter-spacing: var(--tracking-tight);
   }
 
@@ -111,15 +147,15 @@ const { data, id } = entry;
   }
 
   .card__title a:focus-visible::after {
-    outline: 2px solid var(--focus);
-    outline-offset: 4px;
-    border-radius: var(--radius-md);
+    outline: 3px solid var(--focus);
+    outline-offset: 6px;
+    border-radius: var(--radius-lg);
   }
 
   .card__summary {
     font-size: var(--text-sm);
     color: var(--text-muted);
-    margin-block-start: var(--space-2);
+    margin: 0;
     max-width: 48ch;
   }
 
@@ -127,8 +163,18 @@ const { data, id } = entry;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: var(--space-3);
+    margin-block-start: var(--space-2);
     padding: 0;
     list-style: none;
+  }
+
+  .card__tags .tag {
+    background: var(--surface-2);
+    border: 1px solid var(--ink);
+  }
+
+  .card--compact {
+    gap: var(--space-3);
+    padding: var(--space-3);
   }
 </style>

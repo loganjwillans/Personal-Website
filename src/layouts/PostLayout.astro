@@ -63,7 +63,7 @@ const { data, body } = entry;
 <style>
   .post-head {
     padding-block: var(--space-8) var(--space-6);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 2px solid var(--ink);
   }
 
   .post-back {
@@ -75,6 +75,7 @@ const { data, body } = entry;
   .post-back:hover {
     color: var(--text);
     text-decoration: underline;
+    text-decoration-color: var(--ink);
     text-underline-offset: 0.25em;
   }
 
@@ -99,6 +100,8 @@ const { data, body } = entry;
     margin-block-start: var(--space-4);
     font-size: var(--text-xs);
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
   }
 
   .post-tags {
@@ -110,9 +113,15 @@ const { data, body } = entry;
     list-style: none;
   }
 
+  .post-tags .tag {
+    background: var(--surface);
+    border: 1px solid var(--ink);
+  }
+
   .post-tags .tag:hover {
     color: var(--text);
-    border-color: var(--border-strong);
+    background: var(--surface-2);
+    border-color: var(--ink);
   }
 
   .post > .container--narrow {
@@ -124,7 +133,7 @@ const { data, body } = entry;
     gap: var(--space-4);
     margin-block-start: var(--space-8);
     padding-block-start: var(--space-5);
-    border-block-start: 1px solid var(--border);
+    border-block-start: 2px solid var(--ink);
     font-size: var(--text-sm);
     color: var(--text-muted);
   }

@@ -117,6 +117,11 @@ const facts = [
     gap: var(--space-3);
   }
 
+  .cs-eyebrow .lock-badge {
+    background: var(--surface-2);
+    border: 1px solid var(--ink);
+  }
+
   .cs-title {
     font-size: var(--text-4xl);
     margin-block-start: var(--space-3);
@@ -137,7 +142,7 @@ const facts = [
     gap: var(--space-4);
     margin-block: var(--space-6) 0;
     padding-block-start: var(--space-4);
-    border-block-start: 1px solid var(--border);
+    border-block-start: 2px solid var(--ink);
   }
 
   .cs-fact dt {
@@ -162,6 +167,11 @@ const facts = [
     list-style: none;
   }
 
+  .cs-tags .tag {
+    background: var(--surface-2);
+    border: 1px solid var(--ink);
+  }
+
   .cs-cover {
     margin: 0 auto var(--space-6);
     max-width: var(--wide);
@@ -172,24 +182,25 @@ const facts = [
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--ink);
     background: var(--surface-2);
+    box-shadow: var(--shadow-key);
   }
 
   .cs-placeholder {
-    border: 1px dashed var(--border-strong);
+    border: 2px dashed var(--ink);
     border-radius: var(--radius-md);
     padding: var(--space-4);
     margin-block-end: var(--space-5);
     font-size: var(--text-sm);
     color: var(--text-muted);
-    background: var(--surface-2);
+    background: var(--surface);
   }
 
   .cs-footer {
     margin-block-start: var(--space-8);
     padding-block-start: var(--space-5);
-    border-block-start: 1px solid var(--border);
+    border-block-start: 2px solid var(--ink);
   }
 </style>

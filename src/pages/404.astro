@@ -6,6 +6,14 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   <section class="not-found">
     <div class="container container--narrow">
       <p class="eyebrow">404</p>
+      <svg class="not-found__motif" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <circle cx="32" cy="32" r="28" fill="var(--accent-3)"></circle>
+        <path d="M32 10 36 26H28Z" fill="var(--surface)"></path>
+        <path d="M32 54 28 38h8Z" fill="var(--surface)"></path>
+        <path d="M10 32 26 28v8Z" fill="var(--surface)"></path>
+        <path d="M54 32 38 36v-8Z" fill="var(--surface)"></path>
+        <circle cx="32" cy="32" r="10" fill="var(--ink)"></circle>
+      </svg>
       <h1 class="title">This page doesn't exist.</h1>
       <p class="lede">
         Either it moved, or a link is wrong. The work and the writing are still where you left them.
@@ -22,6 +30,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 <style>
   .not-found {
     padding-block: var(--space-10);
+  }
+
+  .not-found__motif {
+    width: 4rem;
+    height: 4rem;
+    margin-block-start: var(--space-4);
+    filter: drop-shadow(3px 3px 0 var(--shadow-ink));
   }
 
   .title {

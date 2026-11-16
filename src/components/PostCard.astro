@@ -32,13 +32,27 @@ const { data, id } = entry;
   .post-row {
     display: grid;
     gap: var(--space-2);
-    padding-block: var(--space-5);
-    border-block-end: 1px solid var(--border);
+    padding: var(--space-5);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    background-image: var(--speckle);
+    background-size: var(--speckle-size);
+    box-shadow: var(--shadow-key-sm);
+    transition:
+      transform var(--duration-2) var(--ease),
+      box-shadow var(--duration-2) var(--ease);
+  }
+
+  .post-row:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-key);
   }
 
   .post-row__title {
     font-size: var(--text-lg);
     letter-spacing: var(--tracking-tight);
+    margin: 0;
   }
 
   .post-row__title a {
@@ -47,7 +61,7 @@ const { data, id } = entry;
 
   .post-row__title a:hover {
     text-decoration: underline;
-    text-decoration-color: var(--border-strong);
+    text-decoration-color: var(--ink);
     text-underline-offset: 0.22em;
   }
 
@@ -55,6 +69,7 @@ const { data, id } = entry;
     color: var(--text-muted);
     font-size: var(--text-sm);
     max-width: 58ch;
+    margin: 0;
   }
 
   .post-row__meta {
@@ -63,5 +78,7 @@ const { data, id } = entry;
     gap: var(--space-2);
     font-size: var(--text-xs);
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
   }
 </style>

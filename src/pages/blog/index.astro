@@ -58,7 +58,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
 <style>
   .page-head {
     padding-block: var(--space-8) var(--space-6);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 2px solid var(--ink);
   }
 
   .page-title {
@@ -83,12 +83,19 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
     list-style: none;
   }
 
+  .tag-list .tag {
+    background: var(--surface);
+    border: 1px solid var(--ink);
+  }
+
   .tag-list .tag:hover {
     color: var(--text);
-    border-color: var(--border-strong);
+    background: var(--surface-2);
+    border-color: var(--ink);
   }
 
   .post-list {
     display: grid;
+    gap: var(--space-4);
   }
 </style>

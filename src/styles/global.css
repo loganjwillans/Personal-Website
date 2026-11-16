@@ -22,7 +22,9 @@ html {
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--speckle);
+  background-size: var(--speckle-size);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--text-base);
@@ -235,14 +237,24 @@ pre code {
   font-weight: 600;
   text-decoration: none;
   line-height: 1.2;
+  box-shadow: var(--shadow-sm);
   transition:
     background-color var(--duration-1) var(--ease),
     border-color var(--duration-1) var(--ease),
-    color var(--duration-1) var(--ease);
+    color var(--duration-1) var(--ease),
+    box-shadow var(--duration-1) var(--ease),
+    transform var(--duration-1) var(--ease);
 }
 
 .button:hover {
   border-color: var(--text);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-md);
+}
+
+.button:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-key-sm);
 }
 
 .button--primary {
@@ -262,6 +274,12 @@ pre code {
   padding-inline: 0;
   text-decoration: underline;
   text-underline-offset: 0.25em;
+  box-shadow: none;
+}
+
+.button--quiet:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .tag {
@@ -327,6 +345,12 @@ pre code {
 
 .skip-link:focus-visible {
   transform: translateY(0);
+}
+
+/* Apply the subtle speckle texture to any surface. */
+.speckle {
+  background-image: var(--speckle);
+  background-size: var(--speckle-size);
 }
 
 /* ==========================================================================
@@ -447,8 +471,8 @@ pre code {
 }
 
 .prose a:hover {
-  text-decoration-color: var(--accent);
-  color: var(--accent);
+  text-decoration-color: var(--accent-text);
+  color: var(--accent-text);
 }
 
 /* ==========================================================================

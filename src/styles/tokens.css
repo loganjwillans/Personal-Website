@@ -8,8 +8,7 @@
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
     'Helvetica Neue', sans-serif;
-  /* Swap for a serif or display face once the brand is defined. */
-  --font-display: var(--font-sans);
+  --font-display: 'Jost', var(--font-sans);
   --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
     monospace;
 
@@ -27,7 +26,7 @@
   --leading-body: 1.65;
 
   --tracking-tight: -0.02em;
-  --tracking-wide: 0.08em;
+  --tracking-wide: 0.14em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -44,51 +43,168 @@
   --wide: 78rem;
   --measure: 66ch;
 
-  --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 18px;
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 26px;
   --radius-full: 999px;
 
   --duration-1: 120ms;
   --duration-2: 220ms;
   --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
 
-  /* Colour — deliberately neutral placeholders. */
-  --bg: oklch(98.6% 0.004 85);
-  --surface: oklch(100% 0 0);
-  --surface-2: oklch(96.6% 0.005 85);
-  --text: oklch(22% 0.012 80);
-  --text-muted: oklch(47% 0.012 80);
-  --border: oklch(89% 0.006 85);
-  --border-strong: oklch(78% 0.008 85);
-  --accent: oklch(46% 0.11 250);
-  --accent-hover: oklch(39% 0.12 250);
-  --accent-contrast: oklch(99% 0 0);
-  --accent-soft: oklch(95.5% 0.022 250);
-  --focus: oklch(55% 0.16 250);
-  --danger: oklch(52% 0.19 25);
+  /* Palette — GMK Motif-inspired mid-century accents on warm paper. */
+  --cream: #F2ECDF;
+  --paper: #FBF7EE;
+  --cream-deep: #E7DFCE;
+  --ink: #191713;
+  --muted: #5C564A;
 
-  --shadow-sm: 0 1px 2px oklch(20% 0.02 80 / 0.06);
-  --shadow-md: 0 2px 4px oklch(20% 0.02 80 / 0.05), 0 12px 28px oklch(20% 0.02 80 / 0.07);
+  --mustard: #E6AF27;
+  --teal: #17A07B;
+  --pink: #E4478B;
+  --vermilion: #ED6A2B;
+  --cobalt: #1B6FC7;
+  --gold: #C8953A;
+
+  /* Surfaces */
+  --bg: var(--cream);
+  --surface: var(--paper);
+  --surface-2: var(--cream-deep);
+
+  /* Text */
+  --text: var(--ink);
+  --text-muted: var(--muted);
+
+  /* Borders */
+  --border: var(--cream-deep);
+  --border-strong: var(--ink);
+
+  /* Accents: mustard is the primary; teal / pink / vermilion take ink text; cobalt takes white. */
+  --accent: var(--mustard);
+  --accent-hover: #C99A1F;
+  --accent-contrast: var(--ink);
+  --accent-soft: #F5ECD3;
+
+  --accent-2: var(--teal);
+  --accent-2-hover: #128A68;
+  --accent-2-contrast: var(--ink);
+  --accent-2-soft: #E0F5EE;
+
+  --accent-3: var(--pink);
+  --accent-3-hover: #D13A7A;
+  --accent-3-contrast: var(--ink);
+  --accent-3-soft: #FCE3ED;
+
+  --accent-4: var(--vermilion);
+  --accent-4-hover: #D85A1F;
+  --accent-4-contrast: var(--ink);
+  --accent-4-soft: #FDE8DF;
+
+  --accent-5: var(--cobalt);
+  --accent-5-hover: #155EAA;
+  --accent-5-contrast: var(--paper);
+  --accent-5-soft: #E3EEFB;
+
+  /* Text-safe accents — the bright fills fail AA as small text on paper. */
+  --accent-text: #8a6200;
+  --accent-2-text: #0e7a5c;
+
+  --focus: var(--accent-5);
+  /* Text-safe vermilion: --accent-4 is a fill colour and too light for small text on cream. */
+  --danger: #b04a1c;
+
+  /* Media overlay — deliberately theme-independent so the scrim stays dark in both themes. */
+  --scrim: #0b0a08;
+  --on-scrim: #f4eee1;
+
+  /* Hard printed offset shadows — no blur. */
+  --shadow-ink: #191713;
+  --shadow-key: 4px 4px 0 var(--shadow-ink);
+  --shadow-key-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-sm: var(--shadow-key-sm);
+  --shadow-md: var(--shadow-key);
+
+  /* Subtle scattered speckle. Use with background-image; pair with --speckle-size. */
+  --speckle:
+    radial-gradient(circle at 34px 42px, #19171308 0 1px, transparent 1px),
+    radial-gradient(circle at 112px 78px, #19171305 0 1.5px, transparent 1.5px),
+    radial-gradient(circle at 76px 132px, #19171307 0 1px, transparent 1px),
+    radial-gradient(circle at 14px 124px, #19171304 0 2px, transparent 2px),
+    radial-gradient(circle at 142px 28px, #19171306 0 1px, transparent 1px);
+  --speckle-size: 160px 160px;
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: oklch(16.5% 0.008 260);
-  --surface: oklch(21% 0.01 260);
-  --surface-2: oklch(25% 0.011 260);
-  --text: oklch(95% 0.004 85);
-  --text-muted: oklch(71% 0.01 260);
-  --border: oklch(30% 0.01 260);
-  --border-strong: oklch(42% 0.012 260);
-  --accent: oklch(78% 0.1 250);
-  --accent-hover: oklch(85% 0.08 250);
-  --accent-contrast: oklch(18% 0.02 260);
-  --accent-soft: oklch(26% 0.03 250);
-  --focus: oklch(80% 0.12 250);
-  --danger: oklch(72% 0.15 25);
+  /* Palette — brightened accents on a near-black ground. */
+  --ink: #F4EEE1;
 
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4);
-  --shadow-md: 0 2px 4px oklch(0% 0 0 / 0.3), 0 12px 28px oklch(0% 0 0 / 0.35);
+  --mustard: #F0BE3E;
+  --teal: #2FBE93;
+  --pink: #F2609E;
+  --vermilion: #F58445;
+  --cobalt: #4E9BE8;
+  --gold: #D6A64A;
+
+  /* Surfaces */
+  --bg: #141311;
+  --surface: #1D1C19;
+  --surface-2: #262521;
+
+  /* Text */
+  --text: #F4EEE1;
+  --text-muted: #ADA493;
+
+  /* Borders */
+  --border: #35332D;
+  --border-strong: var(--ink);
+
+  /* Accents */
+  --accent: var(--mustard);
+  --accent-hover: #F5CD60;
+  --accent-contrast: #141311;
+  --accent-soft: #3A3321;
+
+  --accent-2: var(--teal);
+  --accent-2-hover: #4DD4AB;
+  --accent-2-contrast: #141311;
+  --accent-2-soft: #1E2F28;
+
+  --accent-3: var(--pink);
+  --accent-3-hover: #F57EB2;
+  --accent-3-contrast: #141311;
+  --accent-3-soft: #3A212C;
+
+  --accent-4: var(--vermilion);
+  --accent-4-hover: #F79B65;
+  --accent-4-contrast: #141311;
+  --accent-4-soft: #3D2720;
+
+  --accent-5: var(--cobalt);
+  --accent-5-hover: #7AB5F0;
+  --accent-5-contrast: #141311;
+  --accent-5-soft: #1E293A;
+
+  /* Text-safe accents — the bright fills read as text on the dark ground. */
+  --accent-text: #f0be3e;
+  --accent-2-text: #2fbe93;
+
+  --focus: var(--accent-5);
+  --danger: var(--accent-4);
+
+  /* Gold flecks carry the offset shadow on the dark ground, like the black caps. */
+  --shadow-ink: #d6a64a40;
+  --shadow-key: 4px 4px 0 var(--shadow-ink);
+  --shadow-key-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-sm: var(--shadow-key-sm);
+  --shadow-md: var(--shadow-key);
+
+  /* Gold flecks on dark ground. */
+  --speckle:
+    radial-gradient(circle at 34px 42px, #D6A64A0C 0 1px, transparent 1px),
+    radial-gradient(circle at 112px 78px, #D6A64A08 0 1.5px, transparent 1.5px),
+    radial-gradient(circle at 76px 132px, #D6A64A0A 0 1px, transparent 1px),
+    radial-gradient(circle at 14px 124px, #D6A64A06 0 2px, transparent 2px),
+    radial-gradient(circle at 142px 28px, #D6A64A09 0 1px, transparent 1px);
 }

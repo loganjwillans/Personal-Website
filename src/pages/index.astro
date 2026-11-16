@@ -21,6 +21,22 @@ const experiments = (await getCollection('experiments'))
 
 <BaseLayout>
   <section class="hero">
+    <svg class="hero-motif" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+      <g fill="var(--accent-4)">
+        <path d="M60 14 66 38H54Z"></path>
+        <path d="M60 106 54 82h12Z"></path>
+        <path d="M14 60 38 54v12Z"></path>
+        <path d="M106 60 82 66V54Z"></path>
+      </g>
+      <g fill="var(--accent-2)">
+        <path d="M28 28 42 36 34 50Z"></path>
+        <path d="M92 28 86 42 72 34Z"></path>
+        <path d="M28 92 36 78 50 86Z"></path>
+        <path d="M92 92 78 84 86 70Z"></path>
+      </g>
+      <circle cx="60" cy="60" r="18" fill="var(--accent)"></circle>
+      <circle cx="60" cy="60" r="8" fill="var(--ink)"></circle>
+    </svg>
     <div class="container hero-inner">
       <p class="eyebrow">{site.name} · {site.role} at {site.employer}</p>
       <h1 class="hero-title">Designing the systems behind contract work.</h1>
@@ -91,11 +107,34 @@ const experiments = (await getCollection('experiments'))
 
 <style>
   .hero {
+    position: relative;
     padding-block: var(--space-9) var(--space-7);
-    border-block-end: 1px solid var(--border);
+    border-block-end: 2px solid var(--ink);
+    overflow: hidden;
+  }
+
+  .hero-motif {
+    position: absolute;
+    top: 50%;
+    right: var(--gutter);
+    width: clamp(6rem, 18vw, 12rem);
+    height: clamp(6rem, 18vw, 12rem);
+    transform: translateY(-50%) rotate(12deg);
+    color: var(--accent-4);
+    opacity: 0.22;
+    pointer-events: none;
+  }
+
+  @media (max-width: 72rem) {
+    /* The motif only gets its own space on wide screens; below that it would sit on the headline. */
+    .hero-motif {
+      display: none;
+    }
   }
 
   .hero-inner {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: var(--space-4);
     max-width: 52rem;
@@ -103,7 +142,7 @@ const experiments = (await getCollection('experiments'))
 
   .hero-title {
     font-size: var(--text-4xl);
-    max-width: 22ch;
+    max-width: 20ch;
     margin-block-start: var(--space-2);
   }
 
@@ -127,11 +166,13 @@ const experiments = (await getCollection('experiments'))
     color: var(--text-muted);
     text-decoration: none;
     white-space: nowrap;
+    font-weight: 600;
   }
 
   .section-link:hover {
     color: var(--text);
     text-decoration: underline;
+    text-decoration-color: var(--ink);
     text-underline-offset: 0.25em;
   }
 
@@ -153,5 +194,6 @@ const experiments = (await getCollection('experiments'))
 
   .post-list {
     display: grid;
+    gap: var(--space-4);
   }
 </style>
