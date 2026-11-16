@@ -1,0 +1,157 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import PostCard from '@/components/PostCard.astro';
+import ExperimentCard from '@/components/ExperimentCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '@/config';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const featured = work.filter((entry) => entry.data.featured);
+const selected = (featured.length > 0 ? featured : work).slice(0, 2);
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const experiments = (await getCollection('experiments'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 2);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-inner">
+      <p class="eyebrow">{site.name} · {site.role} at {site.employer}</p>
+      <h1 class="hero-title">Designing the systems behind contract work.</h1>
+      <p class="hero-lede">
+        I'm a product designer at IntelAgree, where I work on the intake, review and approval
+        steps that happen long before anyone signs anything. This is where I think in public
+        about that work, and build things that have nothing to do with it.
+      </p>
+      <div class="cluster hero-actions">
+        <a class="button button--primary" href="/work/">View selected work</a>
+        <a class="button" href={`mailto:${site.email}`}>Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Selected work</h2>
+        <a class="section-link" href="/work/">All case studies →</a>
+      </div>
+      <div class="grid grid--2">
+        {selected.map((entry) => <WorkCard entry={entry} />)}
+      </div>
+    </div>
+  </section>
+
+  {
+    experiments.length > 0 && (
+      <section class="section section--tight">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title">Experiments</h2>
+            <a class="section-link" href="/experiments/">All experiments →</a>
+          </div>
+          <p class="section-intro">
+            Small generative sketches made in Processing and ported to p5.js. No brief, no
+            stakeholders, no deck.
+          </p>
+          <div class="grid grid--2">
+            {experiments.map((entry) => (
+              <ExperimentCard entry={entry} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="section section--tight">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title">Writing</h2>
+            <a class="section-link" href="/blog/">All posts →</a>
+          </div>
+          <div class="post-list">
+            {posts.map((entry) => (
+              <PostCard entry={entry} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-9) var(--space-7);
+    border-block-end: 1px solid var(--border);
+  }
+
+  .hero-inner {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 52rem;
+  }
+
+  .hero-title {
+    font-size: var(--text-4xl);
+    max-width: 22ch;
+    margin-block-start: var(--space-2);
+  }
+
+  .hero-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text-muted);
+    max-width: 56ch;
+  }
+
+  .hero-actions {
+    margin-block-start: var(--space-3);
+  }
+
+  .section-title {
+    font-size: var(--text-2xl);
+  }
+
+  .section-link {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .section-link:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .section-intro {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    max-width: 60ch;
+    margin-block: calc(var(--space-3) * -1) var(--space-5);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-6) var(--space-5);
+  }
+
+  .grid--2 {
+    grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  }
+
+  .post-list {
+    display: grid;
+  }
+</style>

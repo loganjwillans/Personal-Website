@@ -1,0 +1,58 @@
+---
+interface Props {
+  title: string;
+  tradeoff: string;
+}
+
+const { title, tradeoff } = Astro.props;
+---
+
+<aside class="decision">
+  <p class="decision__eyebrow">Decision</p>
+  <h3 class="decision__title">{title}</h3>
+  <div class="decision__body">
+    <slot />
+  </div>
+  <p class="decision__tradeoff"><strong>Trade-off:</strong> {tradeoff}</p>
+</aside>
+
+<style>
+  .decision {
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    padding: var(--space-5);
+    margin-block: var(--space-5);
+  }
+
+  .decision__eyebrow {
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .decision__title {
+    font-size: var(--text-lg);
+    margin-block-start: var(--space-2);
+  }
+
+  .decision__body {
+    margin-block-start: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .decision__body :global(p) {
+    max-width: 56ch;
+  }
+
+  .decision__tradeoff {
+    margin-block-start: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border);
+    font-size: var(--text-sm);
+  }
+</style>

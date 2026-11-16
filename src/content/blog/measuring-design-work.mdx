@@ -1,0 +1,42 @@
+---
+title: Measuring design work without a dashboard
+description: Most design metrics are proxies for someone else's job. A smaller set that has actually held up in reviews.
+pubDate: 2026-05-21
+tags:
+  - Process
+  - Research
+---
+
+There's a version of design measurement that goes like this: instrument everything, build a dashboard, watch the lines go up and to the right, and get credit for the quarter. I've never seen it work, for a simple reason — the numbers that move on a two-week cadence are almost never the numbers a designer influenced.
+
+The numbers a designer influences take longer and are harder to attribute. That doesn't mean measurement is hopeless. It means the useful set is smaller than the one in the deck.
+
+## Three kinds of evidence
+
+**Behaviour you can watch.** Time on task, completion rate, error rate, number of support tickets per feature. These are instrumentable, comparable, and honest. They also usually need a baseline you didn't collect, which is the part everyone skips.
+
+**Judgement you can ask for.** Post-task confidence. "Would you do this again?" "Did you know what to do next?" Self-reported and therefore soft, but when six reviewers in a row say the same thing, it's a signal worth acting on.
+
+**Decisions you can point at.** This one is underrated. "We shipped the inline annotation because five of six reviewers annotated manually in testing, and the sixth asked for the feature." That's a design decision with evidence attached, and it's reviewable in a way that a 3% lift is not.
+
+## What I stopped doing
+
+I stopped reporting metrics I couldn't explain the mechanism for. If I can't describe why the number should move — through which behaviour, for which user, at which step — then the correlation is decoration.
+
+I also stopped treating a single number as the outcome. Time-on-task can improve because the interface got faster or because users gave up sooner. Confidence can improve because the task got easier or because we asked nicer questions. Every metric needs a second reading, ideally qualitative.
+
+## A worked example
+
+On a contract review project, we reported three things:
+
+- Median time to first decision, before and after.
+- Panel count in the default view — a structural number we controlled directly.
+- Reviewer confidence, post-task, on a five-point scale.
+
+The first was the headline. The second was the one we could actually take credit for. The third was the one that explained why the first wasn't just people clicking faster.
+
+That combination survived a review with a sceptical VP of Product because each number had a mechanism, a comparison, and a limit. None of them required a dashboard.
+
+## The honest summary
+
+Design measurement is mostly the discipline of not overclaiming. Pick a small set of numbers, know what they can and can't tell you, pair them with what people said, and be explicit about the mechanism. The dashboard is optional. The mechanism is not.

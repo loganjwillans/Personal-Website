@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="Wireframe of the three-step contract intake: choose a contract type, answer follow-up questions, then review before submitting">
+  <rect width="1600" height="1000" fill="#f1efea"/>
+
+  <!-- step one -->
+  <rect x="110" y="240" width="380" height="420" rx="16" fill="#ffffff" stroke="#d9d6cf"/>
+  <circle cx="158" cy="292" r="18" fill="#35539c"/>
+  <text x="158" y="299" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#ffffff" text-anchor="middle">1</text>
+  <rect x="192" y="284" width="150" height="10" rx="5" fill="#2a2a2e" opacity="0.6"/>
+  <rect x="144" y="330" width="312" height="7" rx="3.5" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="144" y="346" width="250" height="7" rx="3.5" fill="#2a2a2e" opacity="0.22"/>
+
+  <rect x="144" y="386" width="312" height="58" rx="10" fill="#eef1f8" stroke="#35539c"/>
+  <rect x="164" y="404" width="120" height="8" rx="4" fill="#35539c" opacity="0.8"/>
+  <rect x="164" y="420" width="80" height="7" rx="3.5" fill="#35539c" opacity="0.4"/>
+
+  <rect x="144" y="456" width="312" height="58" rx="10" fill="#faf9f7" stroke="#e2dfd8"/>
+  <rect x="164" y="474" width="142" height="8" rx="4" fill="#2a2a2e" opacity="0.35"/>
+  <rect x="164" y="490" width="96" height="7" rx="3.5" fill="#2a2a2e" opacity="0.18"/>
+
+  <rect x="144" y="526" width="312" height="58" rx="10" fill="#faf9f7" stroke="#e2dfd8"/>
+  <rect x="164" y="544" width="104" height="8" rx="4" fill="#2a2a2e" opacity="0.35"/>
+  <rect x="164" y="560" width="120" height="7" rx="3.5" fill="#2a2a2e" opacity="0.18"/>
+
+  <!-- arrow one -->
+  <path d="M508 450h64" stroke="#b8b4ab" stroke-width="3"/>
+  <path d="M566 442l10 8-10 8" fill="none" stroke="#b8b4ab" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- step two -->
+  <rect x="600" y="240" width="380" height="420" rx="16" fill="#ffffff" stroke="#d9d6cf"/>
+  <circle cx="648" cy="292" r="18" fill="#35539c"/>
+  <text x="648" y="299" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#ffffff" text-anchor="middle">2</text>
+  <rect x="682" y="284" width="128" height="10" rx="5" fill="#2a2a2e" opacity="0.6"/>
+  <rect x="634" y="330" width="312" height="7" rx="3.5" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="634" y="346" width="220" height="7" rx="3.5" fill="#2a2a2e" opacity="0.22"/>
+
+  <rect x="634" y="386" width="312" height="46" rx="8" fill="#faf9f7" stroke="#e2dfd8"/>
+  <rect x="652" y="404" width="140" height="8" rx="4" fill="#2a2a2e" opacity="0.35"/>
+
+  <rect x="634" y="448" width="312" height="46" rx="8" fill="#faf9f7" stroke="#e2dfd8"/>
+  <rect x="652" y="466" width="190" height="8" rx="4" fill="#2a2a2e" opacity="0.35"/>
+
+  <rect x="634" y="510" width="312" height="92" rx="8" fill="#faf9f7" stroke="#e2dfd8"/>
+  <rect x="652" y="528" width="110" height="8" rx="4" fill="#2a2a2e" opacity="0.35"/>
+  <rect x="652" y="550" width="260" height="7" rx="3.5" fill="#2a2a2e" opacity="0.18"/>
+  <rect x="652" y="566" width="200" height="7" rx="3.5" fill="#2a2a2e" opacity="0.18"/>
+
+  <!-- arrow two -->
+  <path d="M998 450h64" stroke="#b8b4ab" stroke-width="3"/>
+  <path d="M1056 442l10 8-10 8" fill="none" stroke="#b8b4ab" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- step three -->
+  <rect x="1090" y="240" width="380" height="420" rx="16" fill="#ffffff" stroke="#d9d6cf"/>
+  <circle cx="1138" cy="292" r="18" fill="#35539c"/>
+  <text x="1138" y="299" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#ffffff" text-anchor="middle">3</text>
+  <rect x="1172" y="284" width="104" height="10" rx="5" fill="#2a2a2e" opacity="0.6"/>
+
+  <rect x="1124" y="330" width="312" height="1" fill="#e2dfd8"/>
+  <rect x="1124" y="352" width="90" height="7" rx="3.5" fill="#2a2a2e" opacity="0.3"/>
+  <rect x="1226" y="352" width="120" height="7" rx="3.5" fill="#2a2a2e" opacity="0.55"/>
+  <rect x="1124" y="382" width="76" height="7" rx="3.5" fill="#2a2a2e" opacity="0.3"/>
+  <rect x="1226" y="382" width="160" height="7" rx="3.5" fill="#2a2a2e" opacity="0.55"/>
+  <rect x="1124" y="412" width="102" height="7" rx="3.5" fill="#2a2a2e" opacity="0.3"/>
+  <rect x="1226" y="412" width="96" height="7" rx="3.5" fill="#2a2a2e" opacity="0.55"/>
+  <rect x="1124" y="442" width="84" height="7" rx="3.5" fill="#2a2a2e" opacity="0.3"/>
+  <rect x="1226" y="442" width="140" height="7" rx="3.5" fill="#2a2a2e" opacity="0.55"/>
+
+  <rect x="1124" y="490" width="312" height="70" rx="8" fill="#f4f6e9" stroke="#d9ddc0"/>
+  <rect x="1144" y="508" width="180" height="8" rx="4" fill="#2f7d54" opacity="0.6"/>
+  <rect x="1144" y="528" width="250" height="7" rx="3.5" fill="#2f7d54" opacity="0.3"/>
+
+  <rect x="1124" y="588" width="312" height="46" rx="23" fill="#35539c"/>
+  <rect x="1216" y="607" width="128" height="8" rx="4" fill="#ffffff" opacity="0.85"/>
+
+  <!-- step indicator -->
+  <rect x="110" y="140" width="1360" height="4" rx="2" fill="#e2dfd8"/>
+  <rect x="110" y="140" width="900" height="4" rx="2" fill="#35539c"/>
+</svg>

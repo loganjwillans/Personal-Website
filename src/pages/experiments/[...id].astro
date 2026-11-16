@@ -1,0 +1,106 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import P5Canvas from '@/components/P5Canvas.astro';
+
+export async function getStaticPaths() {
+  const experiments = await getCollection('experiments');
+  return experiments.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+---
+
+<BaseLayout title={data.title} description={data.description} type="article">
+  <article class="experiment">
+    <header class="experiment-head">
+      <div class="container container--narrow">
+        <a class="back" href="/experiments/">← All experiments</a>
+        <h1 class="experiment-title">{data.title}</h1>
+        <p class="experiment-lede">{data.description}</p>
+        <div class="experiment-meta">
+          <span>{data.year}</span>
+          {
+            data.tags.length > 0 && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{data.tags.join(' / ')}</span>
+              </>
+            )
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="container container--narrow">
+      <P5Canvas src={data.sketch} poster={data.poster} title={data.title} />
+
+      <div class="prose experiment-body">
+        <Content />
+      </div>
+
+      {
+        data.source && (
+          <p class="experiment-source">
+            <a class="button" href={data.source} rel="noopener">
+              Read the source
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .experiment-head {
+    padding-block: var(--space-8) var(--space-5);
+  }
+
+  .back {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  .back:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .experiment-title {
+    font-size: var(--text-3xl);
+    margin-block-start: var(--space-4);
+  }
+
+  .experiment-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text-muted);
+    margin-block-start: var(--space-3);
+    max-width: 54ch;
+  }
+
+  .experiment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .experiment-body {
+    margin-block-start: var(--space-6);
+  }
+
+  .experiment-source {
+    margin-block-start: var(--space-6);
+  }
+</style>

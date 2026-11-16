@@ -1,0 +1,36 @@
+---
+title: Design systems that survive the roadmap
+description: Most systems die of neglect, not bad design. A few habits that keep a component library alive after the launch deck.
+pubDate: 2026-10-14
+tags:
+  - Design systems
+  - Process
+---
+
+Every design system starts with the same slide: a grid of components, a type scale, and a promise to expand after launch. Two quarters later the promise is a folder of Figma files nobody opens, and the product is shipping three slightly different buttons.
+
+I've watched this happen from both sides — as the designer who built the system and as the one who quietly worked around it. The pattern is consistent, and it has less to do with craft than with what the system asks of the people around it.
+
+## A system is a maintenance schedule, not an artefact
+
+The launch is the easy part. What kills a library is the second and third use: the request that doesn't quite fit, the deadline that makes copying faster than contributing, the engineer who finds the component's API confusing and builds a wrapper instead.
+
+So the real design question isn't "does this button have the right states?" It's "what happens when someone needs a button that doesn't exist yet?"
+
+If the answer is "they wait for the design systems team", the system will lose. If the answer is "they extend it in a documented way", it survives.
+
+## Three habits that help
+
+**Ship the escape hatch with the component.** Every component I've seen survive has a documented way to be wrong on purpose. A `variant` prop, an override slot, a composition pattern. Not because inconsistency is good, but because an unapproved workaround is worse than an approved one.
+
+**Write the rule you'd defend.** Documentation that says "use this for primary actions" is a wish. Documentation that says "one primary action per view, because two competing primaries halve completion in our checkout tests" is a rule with a reason attached — and reasons survive reorganisations.
+
+**Measure the workaround rate.** Count how often a raw `<button>` appears where a system button should be. That number tells you more about your system's health than the number of components in it.
+
+## The uncomfortable part
+
+The hardest thing to accept is that some teams are right to work around the system. If a product surface needs a pattern the library doesn't have, the library is the thing that's behind, not the team. Treating every deviation as a discipline problem is how systems teams end up with beautiful libraries and no users.
+
+The version of this I now aim for: a system that is the fastest path for 80% of cases, documented and extensible for the rest, and honest about which 20% it is not serving yet.
+
+That's a lot less fun to present than a component grid. It's also the version that's still there a year later.

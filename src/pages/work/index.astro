@@ -1,0 +1,67 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import { getCollection } from 'astro:content';
+
+const work = (await getCollection('work')).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
+);
+---
+
+<BaseLayout
+  title="Work"
+  description="Product design case studies: contract management workflows, research, and the decisions behind them."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Case studies</p>
+      <h1 class="page-title">Selected work</h1>
+      <p class="page-lede">
+        A mix of public write-ups and password-protected client work. Each one covers the problem,
+        the constraints I was working inside, and the decisions I'd defend in a review.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      {
+        work.length === 0 ? (
+          <p class="text-muted">No case studies yet.</p>
+        ) : (
+          <div class="grid">
+            {work.map((entry) => (
+              <WorkCard entry={entry} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-6);
+    border-block-end: 1px solid var(--border);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-block-start: var(--space-3);
+  }
+
+  .page-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text-muted);
+    max-width: 58ch;
+    margin-block-start: var(--space-3);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+    gap: var(--space-7) var(--space-6);
+  }
+</style>

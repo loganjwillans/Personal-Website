@@ -1,0 +1,46 @@
+---
+title: Rebuilding contract intake for teams that don't read instructions
+summary: A protected case study on replacing a 40-field request form with a guided intake that legal and sales both stopped fighting about.
+role: Product Designer
+year: 2024
+client: IntelAgree
+duration: 4 months
+team: 1 designer, 3 engineers, 1 PM
+tags:
+  - Enterprise UX
+  - Service design
+  - Prototyping
+cover: /images/work/contract-intake-cover.svg
+coverAlt: Three intake steps in sequence, narrowing the questions asked, ending in a review card.
+featured: true
+order: 2
+protected: true
+placeholder: true
+---
+
+import Decision from '@/components/case-study/Decision.astro';
+import Figure from '@/components/case-study/Figure.astro';
+
+Intake was the step before any real work happened: someone in sales needed a contract, and had to describe what kind of contract it was, to whom, for how long, and under which paper. The form had forty fields, eleven of them mandatory, and a help article that nobody opened.
+
+This case study is protected because it includes internal process detail. Enter the password to read the full write-up: the research approach, the two competing models we prototyped, what we shipped, and the parts that didn't land.
+
+## The short version
+
+We replaced the single form with a guided intake that asks three questions, then progressively reveals only what the chosen path needs. Median completion time dropped by more than half, and the volume of "wrong template" support tickets fell by two thirds.
+
+<Decision
+  title="Progressive disclosure beat a smarter form"
+  tradeoff="Power users who request the same contract type weekly lost their single-page shortcut."
+>
+  We tested two models: a smarter single form with conditional logic, and a multi-step flow that
+  branched early. The single form was faster for the 5% of users who knew exactly what they wanted.
+  The branching flow was dramatically better for everyone else — and everyone else was 80% of
+  volume.
+</Decision>
+
+<Figure
+  src="/images/work/contract-intake.svg"
+  alt="Three-step intake flow branching by contract type, with a summary step before submission."
+  caption="Placeholder diagram of the intake flow: three questions, then a branch, then a review step."
+/>

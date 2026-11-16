@@ -1,0 +1,74 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'experiments'>;
+}
+
+const { entry } = Astro.props;
+const { data, id } = entry;
+---
+
+<article class="experiment">
+  <a class="experiment__link" href={`/experiments/${id}/`}>
+    <img
+      class="experiment__poster"
+      src={data.poster}
+      alt=""
+      width="800"
+      height="600"
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="experiment__body">
+      <div class="experiment__meta">
+        <span>{data.year}</span>
+        <span aria-hidden="true">·</span>
+        <span>{data.tags.join(' / ')}</span>
+      </div>
+      <h3 class="experiment__title">{data.title}</h3>
+      <p class="experiment__summary">{data.description}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .experiment__link {
+    display: grid;
+    gap: var(--space-3);
+    text-decoration: none;
+  }
+
+  .experiment__poster {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+
+  .experiment__meta {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .experiment__title {
+    font-size: var(--text-base);
+    margin-block-start: var(--space-1);
+  }
+
+  .experiment__link:hover .experiment__title {
+    text-decoration: underline;
+    text-decoration-color: var(--border-strong);
+    text-underline-offset: 0.22em;
+  }
+
+  .experiment__summary {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-block-start: var(--space-1);
+  }
+</style>

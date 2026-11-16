@@ -1,0 +1,134 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import LockIcon from '@/components/LockIcon.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  /** Compact cards drop the summary — used in tighter grids. */
+  compact?: boolean;
+}
+
+const { entry, compact = false } = Astro.props;
+const { data, id } = entry;
+---
+
+<article class:list={['card', { 'card--compact': compact }]}>
+  {
+    data.cover ? (
+      <img
+        class="card__media"
+        src={data.cover}
+        alt=""
+        width="1200"
+        height="750"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <span class="card__media card__media--empty" aria-hidden="true" />
+    )
+  }
+
+  <div class="card__body">
+    <div class="card__meta">
+      <span>{data.year}</span>
+      {data.client ? <span aria-hidden="true">·</span> : null}
+      {data.client ? <span>{data.client}</span> : null}
+      {data.protected ? (
+        <span class="lock-badge"><LockIcon size={11} /> Protected</span>
+      ) : null}
+    </div>
+
+    <h3 class="card__title">
+      <a href={`/work/${id}/`}>{data.title}</a>
+    </h3>
+
+    {!compact && <p class="card__summary">{data.summary}</p>}
+
+    {
+      data.tags.length > 0 && (
+        <ul role="list" class="card__tags">
+          {data.tags.map((tag) => (
+            <li class="tag">{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: relative;
+  }
+
+  .card__media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: transform var(--duration-2) var(--ease);
+  }
+
+  .card:hover .card__media {
+    transform: scale(1.012);
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .card__title {
+    font-size: var(--text-lg);
+    margin-block-start: var(--space-2);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .card__title a {
+    text-decoration: none;
+  }
+
+  /* One link per card: the title's hit area covers the whole card. */
+  .card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card__title a:focus-visible {
+    outline: none;
+  }
+
+  .card__title a:focus-visible::after {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+    border-radius: var(--radius-md);
+  }
+
+  .card__summary {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-block-start: var(--space-2);
+    max-width: 48ch;
+  }
+
+  .card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+</style>

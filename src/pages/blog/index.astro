@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
+---
+
+<BaseLayout
+  title="Blog"
+  description="Field notes on product design, design systems, and the tools I use to make things."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Writing</p>
+      <h1 class="page-title">Field notes</h1>
+      <p class="page-lede">
+        Occasional writing about design work: what held up, what didn't, and the parts of the job
+        that don't fit in a case study.
+      </p>
+      {
+        tags.length > 0 && (
+          <ul role="list" class="tag-list">
+            {tags.map((tag) => (
+              <li>
+                <a class="tag" href={`/blog/tags/${tag}/`}>
+                  {tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      {
+        posts.length === 0 ? (
+          <p class="text-muted">Nothing published yet.</p>
+        ) : (
+          <div class="post-list">
+            {posts.map((entry) => (
+              <PostCard entry={entry} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-6);
+    border-block-end: 1px solid var(--border);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-block-start: var(--space-3);
+  }
+
+  .page-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text-muted);
+    max-width: 56ch;
+    margin-block-start: var(--space-3);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tag-list .tag:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+
+  .post-list {
+    display: grid;
+  }
+</style>

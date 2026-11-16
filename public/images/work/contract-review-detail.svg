@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="Close-up of one expanded redline: the changed clause, the playbook rule it touches, and a private reviewer note">
+  <rect width="1600" height="1000" fill="#f1efea"/>
+
+  <rect x="120" y="90" width="1360" height="820" rx="16" fill="#ffffff" stroke="#d9d6cf"/>
+
+  <!-- section label -->
+  <rect x="168" y="140" width="70" height="9" rx="4.5" fill="#2a2a2e" opacity="0.35"/>
+  <rect x="168" y="162" width="286" height="14" rx="7" fill="#2a2a2e" opacity="0.65"/>
+
+  <!-- clause body -->
+  <rect x="168" y="212" width="900" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+  <rect x="168" y="234" width="840" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+
+  <!-- the change -->
+  <rect x="160" y="272" width="920" height="150" rx="10" fill="#eef1f8"/>
+  <rect x="184" y="296" width="760" height="13" rx="6.5" fill="#b5483f" opacity="0.32"/>
+  <line x1="184" y1="310" x2="944" y2="310" stroke="#b5483f" stroke-width="2.5" opacity="0.6"/>
+  <rect x="184" y="326" width="640" height="13" rx="6.5" fill="#2f7d54" opacity="0.4"/>
+  <rect x="184" y="352" width="820" height="13" rx="6.5" fill="#2f7d54" opacity="0.4"/>
+  <rect x="184" y="378" width="420" height="12" rx="6" fill="#2f7d54" opacity="0.4"/>
+  <rect x="184" y="400" width="150" height="8" rx="4" fill="#35539c" opacity="0.6"/>
+
+  <!-- connectors to rule + note -->
+  <path d="M1080 330h56" stroke="#c9c6bf" stroke-width="2" stroke-dasharray="5 5"/>
+  <path d="M1080 430h56" stroke="#c9c6bf" stroke-width="2" stroke-dasharray="5 5"/>
+
+  <!-- playbook rule -->
+  <rect x="1136" y="248" width="300" height="164" rx="12" fill="#ffffff" stroke="#d9d6cf"/>
+  <rect x="1160" y="272" width="76" height="8" rx="4" fill="#35539c" opacity="0.8"/>
+  <rect x="1160" y="294" width="248" height="10" rx="5" fill="#2a2a2e" opacity="0.55"/>
+  <rect x="1160" y="314" width="212" height="8" rx="4" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="332" width="236" height="8" rx="4" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="350" width="180" height="8" rx="4" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="376" width="112" height="8" rx="4" fill="#2f7d54" opacity="0.55"/>
+
+  <!-- reviewer note -->
+  <rect x="1136" y="436" width="300" height="184" rx="12" fill="#fffdf7" stroke="#e4dcc6"/>
+  <circle cx="1172" cy="470" r="14" fill="#e7e4dd"/>
+  <rect x="1196" y="464" width="86" height="8" rx="4" fill="#2a2a2e" opacity="0.5"/>
+  <rect x="1160" y="500" width="248" height="9" rx="4.5" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="518" width="220" height="9" rx="4.5" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="536" width="240" height="9" rx="4.5" fill="#2a2a2e" opacity="0.22"/>
+  <rect x="1160" y="568" width="90" height="26" rx="13" fill="#f1efea"/>
+  <rect x="1176" y="578" width="58" height="7" rx="3.5" fill="#2a2a2e" opacity="0.4"/>
+
+  <!-- rest of the document -->
+  <rect x="168" y="472" width="900" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+  <rect x="168" y="494" width="820" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+  <rect x="168" y="516" width="860" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+  <rect x="168" y="560" width="560" height="12" rx="6" fill="#2a2a2e" opacity="0.18"/>
+
+  <!-- action row -->
+  <rect x="168" y="780" width="150" height="44" rx="22" fill="#35539c"/>
+  <rect x="200" y="798" width="86" height="8" rx="4" fill="#ffffff" opacity="0.85"/>
+  <rect x="334" y="780" width="130" height="44" rx="22" fill="none" stroke="#c9c6bf"/>
+  <rect x="366" y="798" width="66" height="8" rx="4" fill="#2a2a2e" opacity="0.4"/>
+</svg>

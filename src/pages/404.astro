@@ -1,0 +1,44 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <section class="not-found">
+    <div class="container container--narrow">
+      <p class="eyebrow">404</p>
+      <h1 class="title">This page doesn't exist.</h1>
+      <p class="lede">
+        Either it moved, or a link is wrong. The work and the writing are still where you left them.
+      </p>
+      <div class="actions">
+        <a class="button button--primary" href="/">Home</a>
+        <a class="button" href="/work/">Work</a>
+        <a class="button" href="/blog/">Blog</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: var(--space-10);
+  }
+
+  .title {
+    font-size: var(--text-3xl);
+    margin-block-start: var(--space-3);
+  }
+
+  .lede {
+    color: var(--text-muted);
+    margin-block-start: var(--space-3);
+    max-width: 48ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-6);
+  }
+</style>

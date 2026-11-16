@@ -1,0 +1,144 @@
+---
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import { site } from '@/config';
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+
+function isCurrent(href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__text">
+        <span class="brand__name">{site.name}</span>
+        <span class="brand__role">{site.role}</span>
+      </span>
+    </a>
+
+    <div class="header-nav">
+      <nav aria-label="Primary">
+        <ul role="list" class="nav">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                  class:list={['nav__link', { 'nav__link--current': isCurrent(item.href) }]}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-block-end: 1px solid var(--border);
+    background: color-mix(in oklch, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 20;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-block: var(--space-4);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+  }
+
+  .brand__mark {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    flex: none;
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .brand__name {
+    font-weight: 650;
+    letter-spacing: var(--tracking-tight);
+    font-size: var(--text-base);
+  }
+
+  .brand__role {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__link {
+    display: inline-block;
+    padding: 0.4em 0.7em;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    color: var(--text-muted);
+    transition:
+      color var(--duration-1) var(--ease),
+      background-color var(--duration-1) var(--ease);
+  }
+
+  .nav__link:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  .nav__link--current {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  @media (max-width: 40rem) {
+    .header-inner {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .header-nav {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

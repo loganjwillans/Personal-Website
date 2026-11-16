@@ -1,0 +1,147 @@
+---
+interface Props {
+  src: string;
+  poster: string;
+  title: string;
+}
+
+const { src, poster, title } = Astro.props;
+---
+
+<div class="sketch" data-sketch data-src={src} data-title={title}>
+  <div class="sketch__stage">
+    <img
+      class="sketch__poster"
+      src={poster}
+      alt=""
+      width="800"
+      height="600"
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="sketch__overlay" data-sketch-overlay>
+      <button class="button button--primary sketch__play" type="button" data-sketch-play>
+        <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+          <path d="M4 2.6 13 8l-9 5.4Z" fill="currentColor"></path>
+        </svg>
+        Play sketch
+      </button>
+      <p class="sketch__note">Runs live in the page. Nothing plays until you ask it to.</p>
+    </div>
+  </div>
+
+  <div class="sketch__controls" data-sketch-controls hidden>
+    <span class="sketch__status">Running</span>
+    <button class="button button--quiet" type="button" data-sketch-stop>Stop</button>
+  </div>
+</div>
+
+<script>
+  const sketch = document.querySelector<HTMLElement>('[data-sketch]');
+
+  if (sketch) {
+    const stage = sketch.querySelector<HTMLElement>('.sketch__stage');
+    const overlay = sketch.querySelector<HTMLElement>('[data-sketch-overlay]');
+    const controls = sketch.querySelector<HTMLElement>('[data-sketch-controls]');
+    const play = sketch.querySelector<HTMLButtonElement>('[data-sketch-play]');
+    const stop = sketch.querySelector<HTMLButtonElement>('[data-sketch-stop]');
+    const src = sketch.dataset.src;
+    const title = sketch.dataset.title ?? 'Generative sketch';
+
+    let frame: HTMLIFrameElement | null = null;
+
+    play?.addEventListener('click', () => {
+      if (!stage || !src) return;
+
+      frame = document.createElement('iframe');
+      frame.src = src;
+      frame.title = `${title} — live sketch`;
+      frame.loading = 'eager';
+      frame.setAttribute('allow', 'autoplay');
+      stage.prepend(frame);
+
+      if (overlay) overlay.hidden = true;
+      if (controls) controls.hidden = false;
+      stop?.focus();
+    });
+
+    stop?.addEventListener('click', () => {
+      frame?.remove();
+      frame = null;
+      if (overlay) overlay.hidden = false;
+      if (controls) controls.hidden = true;
+      play?.focus();
+    });
+  }
+</script>
+
+<style>
+  .sketch {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .sketch__stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: oklch(18% 0.01 260);
+  }
+
+  .sketch__poster,
+  .sketch__stage iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .sketch__poster {
+    object-fit: cover;
+  }
+
+  .sketch__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    text-align: center;
+    background: linear-gradient(
+      to top,
+      oklch(12% 0.01 260 / 0.82),
+      oklch(12% 0.01 260 / 0.35)
+    );
+    color: oklch(96% 0 0);
+  }
+
+  .sketch__note {
+    font-size: var(--text-xs);
+    color: oklch(85% 0 0);
+    max-width: 32ch;
+  }
+
+  .sketch__play svg {
+    margin-inline-end: 0.4em;
+  }
+
+  .sketch__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .sketch__status {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+</style>
