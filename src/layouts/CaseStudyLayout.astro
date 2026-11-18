@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import ProtectedContent from '@/components/ProtectedContent.astro';
 import LockIcon from '@/components/LockIcon.astro';
 import { envNameForId } from '@/lib/slug';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'work'>;
@@ -10,6 +11,12 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data, id } = entry;
+const headTilt = tiltStyle(hashTilt(id));
+const bodyPin = pinStyle(hashTilt(`${id}-body`));
+// Page-scoped names: nothing here can pair with another page's copy.
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtCover = viewName(Astro.url.pathname, 'cover');
+const vtBody = viewName(Astro.url.pathname, 'body');
 
 const facts = [
   { label: 'Role', value: data.role },
@@ -21,56 +28,65 @@ const facts = [
 
 <article class="case-study">
   <header class="cs-header">
-    <div class="container container--narrow">
-      <div class="cs-eyebrow">
-        <span class="eyebrow">{data.client ? `${data.client} · Case study` : 'Case study'}</span>
+    <div class="container">
+      <div
+        class="cs-header-sheet sheet sheet--work stack tilt pin pin--corners"
+        style={`${headTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <div class="cs-eyebrow">
+          <span class="eyebrow">{data.client ? `${data.client} · Case study` : 'Case study'}</span>
+          {
+            data.protected && (
+              <span class="lock-badge prop">
+                <LockIcon size={11} />
+                Password protected
+              </span>
+            )
+          }
+        </div>
+
+        <h1 class="cs-title">{data.title}</h1>
+        <p class="cs-summary">{data.summary}</p>
+
+        <dl class="cs-facts">
+          {
+            facts.map((fact) => (
+              <div class="cs-fact">
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
         {
-          data.protected && (
-            <span class="lock-badge">
-              <LockIcon size={11} />
-              Password protected
-            </span>
+          data.tags.length > 0 && (
+            <ul role="list" class="cs-tags">
+              {data.tags.map((tag) => (
+                <li class="tag prop">{tag}</li>
+              ))}
+            </ul>
           )
         }
       </div>
-
-      <h1 class="cs-title">{data.title}</h1>
-      <p class="cs-summary">{data.summary}</p>
-
-      <dl class="cs-facts">
-        {
-          facts.map((fact) => (
-            <div class="cs-fact">
-              <dt>{fact.label}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))
-        }
-      </dl>
-
-      {
-        data.tags.length > 0 && (
-          <ul role="list" class="cs-tags">
-            {data.tags.map((tag) => (
-              <li class="tag">{tag}</li>
-            ))}
-          </ul>
-        )
-      }
     </div>
   </header>
 
+  <!-- The pin sits on a wrapper: the figure's gutter padding would otherwise put it on the cork. -->
   {
     data.cover && (
-      <figure class="cs-cover">
-        <img
-          src={data.cover}
-          alt={data.coverAlt}
-          width="1600"
-          height="900"
-          loading="eager"
-          decoding="async"
-        />
+      <figure class="cs-cover" style={`--vt-name: ${vtCover}`}>
+        <div class="pin pin--corners" style={pinStyle(hashTilt(`${id}-cover`))}>
+          <img
+            class="object"
+            src={data.cover}
+            alt={data.coverAlt}
+            width="1600"
+            height="900"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
       </figure>
     )
   }
@@ -78,7 +94,7 @@ const facts = [
   <div class="container container--narrow">
     {
       data.placeholder && (
-        <aside class="cs-placeholder">
+        <aside class="cs-placeholder prop">
           <p>
             <strong>Sample content.</strong> This case study ships as a structural demo. Replace
             the copy with real work (or delete the file) before sharing the site.
@@ -93,21 +109,30 @@ const facts = [
           <slot />
         </ProtectedContent>
       ) : (
-        <div class="prose">
+        <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
           <slot />
         </div>
       )
     }
 
     <nav class="cs-footer" aria-label="Case study">
-      <a class="button" href="/work/">← All work</a>
+      <a class="button" href="/work/" style={markerStyle(`case-study:${id}:all-work`)}>
+        ← All work
+      </a>
     </nav>
   </div>
 </article>
 
 <style>
   .cs-header {
-    padding-block: var(--space-8) var(--space-6);
+    /* The tilted hero's bounding box extends a few px below its layout box;
+       this bottom value lands the cover the same distance from the visible
+       edge as the project and blog entry pages. */
+    padding-block: var(--space-8) calc(var(--space-7) + 0.75rem);
+  }
+
+  .cs-header-sheet {
+    padding: var(--sheet-pad);
   }
 
   .cs-eyebrow {
@@ -117,22 +142,16 @@ const facts = [
     gap: var(--space-3);
   }
 
-  .cs-eyebrow .lock-badge {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
-  }
-
   .cs-title {
     font-size: var(--text-4xl);
-    margin-block-start: var(--space-3);
+    margin: 0;
     max-width: 20ch;
   }
 
   .cs-summary {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
-    color: var(--text-muted);
-    margin-block-start: var(--space-4);
+    color: var(--text);
     max-width: 52ch;
   }
 
@@ -140,9 +159,8 @@ const facts = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: var(--space-4);
-    margin-block: var(--space-6) 0;
-    padding-block-start: var(--space-4);
-    border-block-start: 2px solid var(--ink);
+    margin: 0;
+    padding-block-start: var(--space-5);
   }
 
   .cs-fact dt {
@@ -162,14 +180,9 @@ const facts = [
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: var(--space-4);
+    margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .cs-tags .tag {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
   }
 
   .cs-cover {
@@ -182,25 +195,22 @@ const facts = [
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    border-radius: var(--radius-lg);
-    border: 2px solid var(--ink);
-    background: var(--surface-2);
-    box-shadow: var(--shadow-key);
   }
 
   .cs-placeholder {
-    border: 2px dashed var(--ink);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    margin-block-end: var(--space-5);
+    /* A note printed on the header sheet's paper. */
+    display: block;
+    margin-block-end: var(--panel-stack);
     font-size: var(--text-sm);
     color: var(--text-muted);
-    background: var(--surface);
+    background: var(--surface-2);
   }
 
   .cs-footer {
     margin-block-start: var(--space-8);
-    padding-block-start: var(--space-5);
-    border-block-start: 2px solid var(--ink);
+  }
+
+  .prose.sheet {
+    padding: var(--sheet-pad);
   }
 </style>

@@ -1,19 +1,13 @@
 ---
 import { site } from '@/config';
+import { hashTilt, pinStyle, viewName } from '@/lib/tilt';
 
 const year = new Date().getFullYear();
+const footerPin = pinStyle(hashTilt('footer'));
+const vtName = viewName(Astro.url.pathname, 'footer');
 ---
 
-<footer class="site-footer">
-  <svg class="footer-motif" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-    <g fill="currentColor">
-      <path d="M24 24c0-6 4.5-10.5 10.5-10.5S45 18 45 24s-4.5 10.5-10.5 10.5S24 30 24 24"></path>
-      <path d="M24 24c-6 0-10.5-4.5-10.5-10.5S18 3 24 3s10.5 4.5 10.5 10.5S30 24 24 24"></path>
-      <path d="M24 24c0 6-4.5 10.5-10.5 10.5S3 30 3 24s4.5-10.5 10.5-10.5S24 18 24 24"></path>
-      <path d="M24 24c6 0 10.5 4.5 10.5 10.5S30 45 24 45s-10.5-4.5-10.5-10.5S18 24 24 24"></path>
-    </g>
-    <circle cx="24" cy="24" r="7" fill="var(--ink)"></circle>
-  </svg>
+<footer class="site-footer sheet pin pin--corners" style={`${footerPin}; --vt-name: ${vtName};`}>
   <div class="container footer-inner">
     <div class="footer-col">
       <p class="footer-name">{site.name}</p>
@@ -21,7 +15,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="footer-col">
-      <p class="eyebrow">Elsewhere</p>
+      <p class="footer-eyebrow prop">Elsewhere</p>
       <ul role="list" class="footer-links">
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         {
@@ -38,60 +32,70 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="footer-col">
-      <p class="eyebrow">Site</p>
+      <p class="footer-eyebrow prop">Site</p>
       <ul role="list" class="footer-links">
         {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {/* Contact lives in the footer only: it is not one of site.nav's routes. */}
+        <li><a href="/contact/">Contact</a></li>
       </ul>
     </div>
   </div>
 
   <div class="container footer-bottom">
     <p>© {year} {site.name}. Built with Astro.</p>
-    <p class="footer-note">Set in Jost, with a system sans for body copy.</p>
+    <p class="footer-note">Set in Space Grotesk and Outfit.</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
     position: relative;
-    border-block-start: 2px solid var(--ink);
+    /* As wide as the sheets in the content column: the container width less its
+       gutters, so cork shows on both sides and the footer lines up edge to edge
+       with the sheets above it. */
+    width: calc(min(100%, var(--wide)) - var(--gutter) * 2);
+    margin-inline: auto;
     margin-block-start: var(--space-9);
-    padding-block: var(--space-7) var(--space-5);
-    background: var(--surface);
-    background-image: var(--speckle);
-    background-size: var(--speckle-size);
   }
 
-  .footer-motif {
-    position: absolute;
-    top: calc(var(--space-5) * -1);
-    right: var(--gutter);
-    width: 3.25rem;
-    height: 3.25rem;
-    color: var(--accent-3);
-    filter: drop-shadow(2px 2px 0 var(--shadow-ink));
-    pointer-events: none;
+  /* The sheet padding is the footer's only inset: the container gutter would
+     double it now that the sheet is no longer full-bleed. */
+  .site-footer .container {
+    padding-inline: 0;
   }
 
   .footer-inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
     gap: var(--space-6);
+    padding-block: var(--space-7);
+  }
+
+  .footer-eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-weight: 650;
+    color: var(--ink);
+    background: var(--blush);
   }
 
   .footer-name {
     font-family: var(--font-display);
     font-weight: 650;
     letter-spacing: var(--tracking-tight);
+    font-size: var(--text-lg);
   }
 
   .footer-meta {
     font-size: var(--text-sm);
     color: var(--text-muted);
+    margin-block-start: var(--space-1);
   }
 
   .footer-links {
-    margin: var(--space-2) 0 0;
+    margin: var(--space-3) 0 0;
     padding: 0;
     list-style: none;
     display: grid;
@@ -115,9 +119,7 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--space-3);
-    margin-block-start: var(--space-7);
-    padding-block-start: var(--space-4);
-    border-block-start: 2px solid var(--ink);
+    padding-block: var(--space-4);
     font-size: var(--text-xs);
     color: var(--text-muted);
   }

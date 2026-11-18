@@ -1,6 +1,7 @@
 ---
 import LockIcon from '@/components/LockIcon.astro';
 import { site } from '@/config';
+import { hashTilt, markerStyle, pinStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   slug: string;
@@ -12,12 +13,16 @@ const inputId = `password-${slug}`;
 const helpId = `password-help-${slug}`;
 const errorId = `password-error-${slug}`;
 const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessRequestSubject)}`;
+const gatePin = pinStyle(hashTilt(slug));
+const bodyPin = pinStyle(hashTilt(`${slug}-body`));
+const vtGate = viewName(Astro.url.pathname, 'gate');
+const vtBody = viewName(Astro.url.pathname, 'body');
 ---
 
 <div class="protected" data-protected data-slug={slug} data-password-env={passwordEnv}>
-  <div class="gate" data-gate>
+  <div class="gate object pin" data-gate style={`${gatePin}; --vt-name: ${vtGate};`}>
     <div class="gate__head">
-      <span class="lock-badge"><LockIcon size={11} /> Protected</span>
+      <span class="lock-badge prop"><LockIcon size={11} /> Protected</span>
       <h2 class="gate__title">This case study is password protected</h2>
       <p class="gate__intro">
         It contains work that isn't public. Enter the password you were given to read it.
@@ -52,7 +57,12 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
       <p class="gate__error" id={errorId} role="alert" aria-live="assertive" data-gate-error hidden>
       </p>
 
-      <button class="button button--primary gate__submit" type="submit" data-gate-submit>
+      <button
+        class="button button--primary gate__submit"
+        type="submit"
+        data-gate-submit
+        style={markerStyle(`gate:${slug}:submit`)}
+      >
         Unlock case study
       </button>
     </form>
@@ -64,7 +74,12 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
     {
       import.meta.env.DEV && (
         <p class="gate__dev">
-          <button class="button button--quiet" type="button" data-dev-unlock>
+          <button
+            class="button button--quiet"
+            type="button"
+            data-dev-unlock
+            style={markerStyle(`gate:${slug}:dev`)}
+          >
             Dev only: preview without a password
           </button>
         </p>
@@ -79,12 +94,19 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
     </noscript>
   </div>
 
-  <div class="unlocked-bar" data-unlocked-bar hidden>
-    <span class="lock-badge"><LockIcon size={11} /> Unlocked for this session</span>
-    <button class="button button--quiet" type="button" data-lock>Lock page</button>
+  <div class="unlocked-bar object" data-unlocked-bar hidden>
+    <span class="lock-badge prop"><LockIcon size={11} /> Unlocked for this session</span>
+    <button
+      class="button button--quiet"
+      type="button"
+      data-lock
+      style={markerStyle(`gate:${slug}:lock`)}
+    >
+      Lock page
+    </button>
   </div>
 
-  <template data-protected-source><div class="prose"><slot /></div></template>
+  <template data-protected-source><div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}><slot /></div></template>
 
   <div class="protected__content" data-protected-output tabindex="-1" hidden></div>
 </div>
@@ -99,9 +121,13 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
     type EncryptedPayload,
   } from '@/lib/crypto';
 
-  const root = document.querySelector<HTMLElement>('[data-protected]');
+  // Bundled scripts run once per document, so the gate is bound by hand after
+  // every navigation (the router replaces the DOM it was bound to).
+  function init() {
+    const rootEl = document.querySelector<HTMLElement>('[data-protected]');
+    if (!rootEl) return;
+    const root: HTMLElement = rootEl;
 
-  if (root) {
     const gate = root.querySelector<HTMLElement>('[data-gate]');
     const form = root.querySelector<HTMLFormElement>('[data-gate-form]');
     const input = root.querySelector<HTMLInputElement>('[data-gate-input]');
@@ -138,7 +164,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
       if (!submit) return;
       submit.disabled = busy;
       submit.textContent = busy ? 'Unlocking…' : 'Unlock case study';
-      root?.setAttribute('aria-busy', busy ? 'true' : 'false');
+      root.setAttribute('aria-busy', busy ? 'true' : 'false');
     }
 
     function show(html: string) {
@@ -245,6 +271,8 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
 
     lockButton?.addEventListener('click', lock);
   }
+
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
@@ -253,25 +281,14 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
   }
 
   .gate {
-    border: 2px solid var(--ink);
-    background: var(--surface);
-    background-image: var(--speckle);
-    background-size: var(--speckle-size);
-    border-radius: var(--radius-lg);
     padding: clamp(var(--space-5), 4vw, var(--space-7));
     max-width: 34rem;
-    box-shadow: var(--shadow-key);
   }
 
   .gate__head {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-4);
     justify-items: start;
-  }
-
-  .gate__head .lock-badge {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
   }
 
   .gate__title {
@@ -305,11 +322,9 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
   .field__control {
     display: flex;
     align-items: stretch;
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    background: var(--bg);
+    /* A printed field: a tint, no frame. */
+    background: var(--surface-2);
     overflow: hidden;
-    transition: box-shadow var(--duration-1) var(--ease);
   }
 
   .field__control:focus-within {
@@ -339,16 +354,11 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--text-muted);
-    border-inline-start: 2px solid var(--ink);
-    background: var(--surface);
-    transition:
-      color var(--duration-1) var(--ease),
-      background-color var(--duration-1) var(--ease);
+    transition: color var(--duration-1) var(--ease);
   }
 
   .field__reveal:hover {
     color: var(--text);
-    background: var(--surface-2);
   }
 
   .field__help {
@@ -374,7 +384,6 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
   .gate__foot {
     margin-block-start: var(--space-5);
     padding-block-start: var(--space-4);
-    border-block-start: 2px solid var(--ink);
     font-size: var(--text-sm);
     color: var(--text-muted);
   }
@@ -391,18 +400,13 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessReq
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     margin-block-end: var(--space-2);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    box-shadow: var(--shadow-key-sm);
-  }
-
-  .unlocked-bar .lock-badge {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
   }
 
   .protected__content:focus-visible {
     outline: none;
+  }
+
+  .prose.sheet {
+    padding: var(--sheet-pad);
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from '@/components/ThemeToggle.astro';
+import Sticker from '@/components/Sticker.astro';
 import { site } from '@/config';
 
 const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
@@ -7,28 +8,45 @@ const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
 function isCurrent(href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/* Tab icons, keyed by route: plain geometry on a 24-unit grid, squared off like
+   the rest of the site, so they need no icon library or assets. */
+const icons: Record<string, string> = {
+  '/work': '<rect x="2.75" y="7.25" width="18.5" height="12.5"/><path d="M8.75 7.25V4.75h6.5v2.5"/>',
+  '/projects': '<path d="M9.5 3.5h5M11 3.5v6.4L5.6 19.2h12.8L13 9.9V3.5M7.9 15.2h8.2"/>',
+  '/blog': '<rect x="4.5" y="3.5" width="15" height="17"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/>',
+  '/about': '<circle cx="12" cy="7.8" r="3.6"/><path d="M4.8 20.5a7.2 7.2 0 0 1 14.4 0"/>',
+};
+
+/* The tint under the current tab, keyed by route: the same colours the section
+   head sheets print in. */
+const tints: Record<string, string> = {
+  '/work': 'var(--route-work)',
+  '/projects': 'var(--route-projects)',
+  '/blog': 'var(--route-blog)',
+  '/about': 'var(--route-about-nav)',
+};
+
+const links = site.nav.map((item) => ({
+  href: item.href,
+  label: item.label,
+  current: isCurrent(item.href),
+  icon: icons[item.href],
+  /* The current tab's lozenge is the colour its section prints in. Home is
+     none of these, and has no current tab anyway. */
+  tint: tints[item.href],
+}));
+
+/* Which tab the tint sits under. -1 when the page belongs to none of them (the
+   home page), where no tab is current and the tint is simply not painted. */
+const activeTab = links.findIndex((link) => link.current);
 ---
 
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/">
-      <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32" focusable="false">
-          <circle cx="16" cy="16" r="14" fill="var(--accent)"></circle>
-          <path
-            d="M16 25c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"></path>
-          <path
-            d="M16 21c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"></path>
-          <circle cx="16" cy="16" r="2.5" fill="currentColor"></circle>
-        </svg>
+      <span class="brand__mark">
+        <img src="/logo.svg" alt="" width="185" height="90" draggable="false" />
       </span>
       <span class="brand__text">
         <span class="brand__name">{site.name}</span>
@@ -37,17 +55,23 @@ function isCurrent(href: string): boolean {
     </a>
 
     <div class="header-nav">
-      <nav aria-label="Primary">
+      <nav class="header-nav__primary" aria-label="Primary">
         <ul role="list" class="nav">
+          <li
+            class="nav__indicator no-transition"
+            aria-hidden="true"
+            style={activeTab >= 0 ? `--ind-color: ${links[activeTab].tint}` : undefined}
+          />
           {
-            site.nav.map((item) => (
+            links.map((link) => (
               <li>
                 <a
-                  href={item.href}
-                  aria-current={isCurrent(item.href) ? 'page' : undefined}
-                  class:list={['nav__link', { 'nav__link--current': isCurrent(item.href) }]}
+                  href={link.href}
+                  aria-current={link.current ? 'page' : undefined}
+                  class:list={['nav__link', { 'nav__link--current': link.current }]}
+                  style={`--link-tint: ${link.tint}`}
                 >
-                  {item.label}
+                  {link.label}
                 </a>
               </li>
             ))
@@ -55,19 +79,200 @@ function isCurrent(href: string): boolean {
         </ul>
       </nav>
       <ThemeToggle />
+      <Sticker />
     </div>
   </div>
 </header>
 
+<nav class="tab-bar" aria-label="Primary">
+  <ul role="list" class="tab-bar__list">
+    {
+      activeTab >= 0 && (
+        /* One tint for the whole bar, moved from tab to tab by --i. The wrapper
+           is absolute so it does not take a grid cell. */
+        <li class="tab-bar__indicator-slot" aria-hidden="true">
+          <span
+            class="tab-bar__indicator"
+            style={`--i: ${activeTab}; --ind-color: ${links[activeTab].tint}`}
+          />
+        </li>
+      )
+    }
+    {
+      links.map((link) => (
+        <li>
+          <a
+            class="tab-bar__link"
+            href={link.href}
+            aria-current={link.current ? 'page' : undefined}
+            style={`--link-tint: ${link.tint}`}
+          >
+            <span class="tab-bar__icon-wrap" aria-hidden="true">
+              <svg
+                class="tab-bar__icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="square"
+              >
+                <Fragment set:html={link.icon} />
+              </svg>
+            </span>
+            <span class="tab-bar__label">{link.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  /* The bottom bar folds to its icons while the page is read downwards and
+     opens again on the way up. One passive listener per document: the module
+     runs once, so it looks the bar up each time instead of holding the old one,
+     and a navigation resets the state (the new page opens at the top). */
+  const CONDENSE_AFTER = 100; // px of downward scroll before the bar may fold
+  const STEP = 8; // ignore the wobble at the start of a gesture
+
+  let lastY = window.scrollY;
+  let condensed = false;
+
+  function onScroll() {
+    const y = window.scrollY;
+    if (Math.abs(y - lastY) < STEP) return;
+    const down = y > lastY;
+    lastY = y;
+    const next = down && y > CONDENSE_AFTER;
+    if (next === condensed) return;
+    condensed = next;
+    document.querySelector('.tab-bar')?.classList.toggle('is-condensed', condensed);
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    lastY = window.scrollY;
+    condensed = false;
+    document.querySelector('.tab-bar')?.classList.remove('is-condensed');
+  });
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* A tab tap moves the tint first and the page follows. The router's view
+     transition freezes the bar as a snapshot for the whole peel and pin, so a
+     slide started after the swap would never be seen: it is held until the tint
+     arrives, then the navigation runs. Captured on document so it runs before
+     the router's own click handler, which then steps aside. */
+  const SLIDE = 220; // --duration-2, the tint's travel time
+  let pending: ReturnType<typeof setTimeout> | undefined;
+
+  function moveIndicator(indicator: HTMLElement, link: HTMLElement) {
+    indicator.style.setProperty('--ind-x', `${link.offsetLeft}px`);
+    indicator.style.setProperty('--ind-w', `${link.offsetWidth}px`);
+  }
+
+  function positionIndicator() {
+    const current = document.querySelector<HTMLElement>('.nav__link--current');
+    const indicator = document.querySelector<HTMLElement>('.nav__indicator');
+    if (!current || !indicator) return;
+    // Set the final spot with transitions off: on the first load the pill would
+    // otherwise grow from zero, and after a swap it slid in again from the left
+    // because page-load fires after the new header's snapshot was taken. Doing
+    // it on after-swap (inside the transition's DOM update) puts it in the shot.
+    indicator.classList.add('no-transition');
+    moveIndicator(indicator, current);
+    requestAnimationFrame(() => indicator.classList.remove('no-transition'));
+  }
+
+  document.addEventListener('astro:after-swap', positionIndicator);
+  document.addEventListener('astro:page-load', positionIndicator);
+
+  document.addEventListener(
+    'click',
+    (event) => {
+      const link =
+        event.target instanceof Element
+          ? event.target.closest<HTMLAnchorElement>('.tab-bar__link, .nav__link')
+          : null;
+      if (
+        !link ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.getAttribute('aria-current') === 'page'
+      ) {
+        return; // a new tab, a download, or the page already shown: leave it alone
+      }
+
+      const bar = link.closest<HTMLElement>('.tab-bar, .nav');
+      const indicator = bar?.querySelector<HTMLElement>('.tab-bar__indicator, .nav__indicator');
+      if (!bar || !indicator) return; // home has no current tab to slide from
+
+      event.preventDefault();
+      // The pill takes the colour of the page it is heading to: on the home page
+      // there is no current tab to have carried one in, and the fallback is yellow.
+      const tint = link.style.getPropertyValue('--link-tint');
+      if (tint) indicator.style.setProperty('--ind-color', tint);
+      if (indicator.classList.contains('nav__indicator')) {
+        indicator.classList.remove('no-transition');
+        moveIndicator(indicator, link);
+      } else {
+        const tab = [...bar.querySelectorAll('.tab-bar__link')].indexOf(link);
+        indicator.style.setProperty('--i', String(tab));
+      }
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      clearTimeout(pending);
+      pending = setTimeout(() => navigate(link.href, { sourceElement: link }), reduced ? 0 : SLIDE);
+    },
+    true,
+  );
+</script>
+
 <style>
+  /* The tab bar (the only primary nav under 64rem) needs the same glass light
+     as the header pill, and custom properties do not cross between siblings. */
+  .site-header,
+  .tab-bar {
+    /* The light catch is the theme's own highlight: a bright glint in light,
+       a whisper in dark (where a fixed white rim showed as a white line). */
+    --header-rim: var(--highlight);
+    /* The sheen comes off the highlight token, so it is a glint in light and a
+       whisper in dark, where a brighter veil would cost the white nav text its
+       contrast. */
+    --header-sheen: color-mix(in srgb, var(--highlight) 22%, transparent);
+    --header-sheen-soft: color-mix(in srgb, var(--highlight) 4%, transparent);
+    /* The far rim of the lens: a whisper of shade under the bottom edge. */
+    --header-shade: color-mix(in srgb, var(--scrim) 15%, transparent);
+  }
+
   .site-header {
-    border-block-end: 2px solid var(--ink);
-    /* srgb, not oklch: mixing with transparent in oklch drops the hue and tints the band pink. */
-    background: color-mix(in srgb, var(--bg) 92%, transparent);
-    backdrop-filter: blur(10px);
+    /* Glass over the board: the cork shows through, blurred and lifted. The edge
+       is a lens, not a rule — a light catch on the top rim, a shade along the
+       bottom one, and the soft shadow underneath. */
+    background:
+      linear-gradient(
+        to bottom,
+        var(--header-sheen),
+        var(--header-sheen-soft) 55%,
+        transparent 88%
+      ),
+      color-mix(in srgb, var(--surface) 60%, transparent);
+    backdrop-filter: blur(30px) saturate(1.8);
+    -webkit-backdrop-filter: blur(30px) saturate(1.8);
     position: sticky;
     inset-block-start: 0;
     z-index: 20;
+    box-shadow:
+      inset 0 1px 0 var(--header-rim),
+      inset 0 3px 5px -4px var(--header-rim),
+      inset 0 -1px 0 var(--header-shade),
+      inset 0 -8px 12px -10px var(--header-shade),
+      var(--shadow-desk-sm);
+    /* Own transition group, so the bar can sit above the items that peel. */
+    view-transition-name: site-header;
   }
 
   .header-inner {
@@ -78,6 +283,31 @@ function isCurrent(href: string): boolean {
     padding-block: var(--space-4);
   }
 
+  @media (min-width: 64rem) {
+    /* Desktop: the bar lifts off the top into a pill — a little wider than the
+       page column, clear of the screen edges and floating over the cork. The
+       container inside keeps the page's own column and gutter, so the brand
+       still lines up with the content below it. */
+    .site-header {
+      width: min(calc(var(--wide) + 4rem), calc(100% - var(--space-4) * 2));
+      margin-inline: auto;
+      margin-block-start: 0.75rem;
+      inset-block-start: 0.75rem;
+      border-radius: var(--nav-radius);
+      box-shadow:
+        inset 0 1px 0 var(--header-rim),
+        inset 0 4px 6px -4px var(--header-rim),
+        inset 0 -1px 0 var(--header-shade),
+        inset 0 -12px 16px -14px var(--header-shade),
+        var(--shadow-desk-lg);
+    }
+
+    .header-inner {
+      /* Tighter than the full-width bar so the pill stays a lozenge, not a slab. */
+      padding-block: var(--space-3);
+    }
+  }
+
   .brand {
     display: inline-flex;
     align-items: center;
@@ -86,20 +316,18 @@ function isCurrent(href: string): boolean {
   }
 
   .brand__mark {
-    width: 2rem;
-    height: 2rem;
+    width: calc(2.25rem * 185 / 90);
+    height: 2.25rem;
     flex: none;
-    color: var(--ink);
-    filter: drop-shadow(2px 2px 0 var(--shadow-ink));
     transition: transform var(--duration-1) var(--ease);
   }
 
   .brand:hover .brand__mark,
   .brand:focus-visible .brand__mark {
-    transform: rotate(12deg) scale(1.05);
+    transform: scale(1.04);
   }
 
-  .brand__mark svg {
+  .brand__mark img {
     display: block;
     width: 100%;
     height: 100%;
@@ -119,6 +347,7 @@ function isCurrent(href: string): boolean {
   }
 
   .brand__role {
+    font-family: var(--font-display);
     font-size: var(--text-xs);
     color: var(--text-muted);
     text-transform: uppercase;
@@ -131,7 +360,21 @@ function isCurrent(href: string): boolean {
     gap: var(--space-4);
   }
 
+  /* Narrow screens hand the primary nav to the bottom tab bar; the top bar keeps
+     only the brand and the theme toggle. display: none keeps the hidden one out
+     of the accessibility tree and the tab order. */
+  .header-nav__primary {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .header-nav__primary {
+      display: block;
+    }
+  }
+
   .nav {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
@@ -140,49 +383,218 @@ function isCurrent(href: string): boolean {
     list-style: none;
   }
 
+  /* One block behind the current link, slid to the next one before the router
+     navigates — the desktop counterpart of the tab bar's indicator. */
+  .nav__indicator {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 0;
+    block-size: 2.25rem;
+    inline-size: var(--ind-w, 0px);
+    border-radius: var(--nav-radius);
+    background: color-mix(in srgb, var(--ind-color, var(--accent)) 30%, transparent);
+    transform: translateX(var(--ind-x, 0px));
+    pointer-events: none;
+    transition:
+      transform var(--duration-2) var(--ease),
+      inline-size var(--duration-2) var(--ease);
+  }
+
+  .nav__indicator.no-transition {
+    transition: none;
+  }
+
   .nav__link {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
-    padding: 0.45em 0.85em;
-    border-radius: var(--radius-full);
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--nav-radius);
     font-size: var(--text-sm);
     font-weight: 600;
     text-decoration: none;
     color: var(--text-muted);
-    border: 2px solid transparent;
     background: transparent;
     transition:
-      transform var(--duration-1) var(--ease),
-      box-shadow var(--duration-1) var(--ease),
       color var(--duration-1) var(--ease),
-      background-color var(--duration-1) var(--ease),
-      border-color var(--duration-1) var(--ease);
+      background-color var(--duration-2) var(--ease);
   }
 
   .nav__link:hover {
     color: var(--text);
-    background: var(--surface);
-    border-color: var(--ink);
-    box-shadow: var(--shadow-key-sm);
-    transform: translate(-1px, -1px);
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
   }
 
   .nav__link--current {
     color: var(--text);
-    background: var(--surface);
-    border-color: var(--ink);
-    box-shadow: var(--shadow-key-sm);
+    background: transparent; /* the indicator paints the lozenge */
   }
 
-  @media (max-width: 40rem) {
-    .header-inner {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--space-3);
-    }
+  /* ---- Bottom tab bar (mobile) -------------------------------------------- */
 
-    .header-nav {
-      width: 100%;
-      justify-content: space-between;
+  .tab-bar {
+    /* Fixed, so the header's backdrop-filter cannot become its containing block:
+       the bar is a sibling of <header>, not a child. */
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    z-index: 25;
+    /* Width, not insets, so the bar itself can be animated; auto margins keep it
+       centred whatever the width is. The gutter is the inset it used to have. */
+    inline-size: calc(100% - var(--space-3) * 2);
+    max-inline-size: 26rem;
+    margin-inline: auto;
+    padding: var(--space-2);
+    border-radius: var(--nav-radius);
+    /* Glassy, but a touch more opaque than the top bar: the labels are small. */
+    background:
+      linear-gradient(
+        to bottom,
+        var(--header-sheen),
+        var(--header-sheen-soft) 55%,
+        transparent 88%
+      ),
+      color-mix(in srgb, var(--surface) 66%, transparent);
+    backdrop-filter: blur(30px) saturate(1.8);
+    -webkit-backdrop-filter: blur(30px) saturate(1.8);
+    box-shadow:
+      inset 0 1px 0 var(--header-rim),
+      inset 0 -1px 0 var(--header-shade),
+      inset 0 -12px 18px -18px var(--header-shade),
+      var(--shadow-desk);
+    /* Own transition group too, held above the items that peel. */
+    view-transition-name: tab-bar;
+    transition:
+      inline-size var(--duration-2) var(--ease),
+      padding-block var(--duration-2) var(--ease);
+  }
+
+  .tab-bar__list {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tab-bar__indicator-slot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* The active block slides between tabs: --i is the active tab index. */
+  .tab-bar__indicator {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: calc(25% - var(--space-1) * 0.75);
+    border-radius: var(--nav-radius);
+    background: color-mix(in srgb, var(--ind-color, var(--accent)) 30%, transparent);
+    transform: translateX(calc(var(--i, 0) * (100% + var(--space-1))));
+    transition: transform var(--duration-2) var(--ease);
+  }
+
+  .tab-bar__link {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    padding-block: var(--space-1) 0.3rem;
+    border-radius: var(--nav-radius);
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color var(--duration-1) var(--ease),
+      background-color var(--duration-2) var(--ease),
+      gap var(--duration-2) var(--ease),
+      padding-block var(--duration-2) var(--ease);
+  }
+
+  .tab-bar__icon-wrap {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--nav-radius);
+    transition:
+      background-color var(--duration-1) var(--ease),
+      color var(--duration-1) var(--ease);
+  }
+
+  .tab-bar__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .tab-bar__label {
+    /* A hair over one 0.6875rem line at 1.2, so no descender clips while the
+       label is rolled away. As wide as its tab, so it fades in place as the bar
+       narrows instead of spilling over its neighbours. */
+    display: block;
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: 0.875rem;
+    text-align: center;
+    opacity: 1;
+    transition:
+      block-size var(--duration-2) var(--ease),
+      opacity var(--duration-2) var(--ease);
+  }
+
+  /* No hover effects on the tab bar: the icons stay still, and the current
+     page is marked only by the sliding indicator. */
+
+  /* Active page: the tint wraps the whole tab — icon and label together — so it
+     reads as one lozenge, not a pad behind the icon. */
+  .tab-bar__link[aria-current='page'] {
+    color: var(--text);
+    background: transparent; /* the indicator paints the pill */
+  }
+
+  /* Reading down the page folds the bar to its icons — narrower and shorter, so
+     it becomes a compact pill rather than a squat slab — and opens it again on
+     the way up. The bottom inset stays put either way. */
+  .tab-bar.is-condensed {
+    /* Four 2rem icon pads, their gaps and the bar's own padding, with a little
+       air between: about half the open bar, still centred by the auto margins. */
+    inline-size: 12rem;
+    padding-block: var(--space-1);
+  }
+
+  .tab-bar.is-condensed .tab-bar__link {
+    gap: 0;
+    padding-block: 0;
+  }
+
+  .tab-bar.is-condensed .tab-bar__label {
+    block-size: 0;
+    opacity: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .tab-bar {
+      display: none;
+    }
+  }
+
+  /* Room under the page so the fixed bar never covers the footer's last line.
+     Only while the bar is shown, so the desk view keeps its own rhythm. */
+  @media (max-width: 63.999rem) {
+    :global(body) {
+      padding-block-end: calc(var(--space-7) + 3.5rem);
     }
   }
 </style>

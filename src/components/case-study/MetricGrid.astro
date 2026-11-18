@@ -37,13 +37,9 @@ const { items } = Astro.props;
   }
 
   .metric {
-    background: var(--surface);
-    background-image: var(--speckle);
-    background-size: var(--speckle-size);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-key-sm);
+    /* Printed on the prose sheet: a tint block, nothing raised. */
+    padding: var(--space-5);
+    background: var(--surface-2);
   }
 
   .metric__value {
@@ -51,15 +47,15 @@ const { items } = Astro.props;
     font-weight: 650;
     letter-spacing: var(--tracking-tight);
     line-height: 1;
-    color: var(--accent-4);
+    color: var(--red);
   }
 
   .metric__label {
-    margin: var(--space-2) 0 0;
+    margin: var(--space-3) 0 0;
     font-size: var(--text-sm);
     color: var(--text-muted);
     display: grid;
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
 
   .metric__note {

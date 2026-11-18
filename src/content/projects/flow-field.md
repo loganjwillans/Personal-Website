@@ -5,8 +5,8 @@ year: 2026
 tags:
   - Generative
   - p5.js
-sketch: /experiments/flow-field/sketch.html
-poster: /experiments/flow-field/poster.svg
+sketch: /projects/flow-field/sketch.html
+poster: /projects/flow-field/poster.svg
 order: 1
 ---
 
@@ -14,7 +14,7 @@ The first version was sixteen lines: pick a random point, read the noise field, 
 
 ## How it works
 
-Each particle samples Perlin noise at its own coordinates, plus a slowly advancing third dimension. That third value is the only thing that changes over time — the field itself is static, so the movement reads as a current rather than a jitter.
+Each particle samples Perlin noise at its own coordinates, plus a slowly advancing third dimension. That third value is the only thing that changes over time â€” the field itself is static, so the movement reads as a current rather than a jitter.
 
 The trail comes from drawing a single line per particle per frame with a very low alpha. New lines are almost transparent; old ones accumulate until they read as solid. When a particle leaves the canvas it resets to a random edge, so the composition never empties.
 

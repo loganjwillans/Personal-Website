@@ -2,10 +2,14 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import WorkCard from '@/components/WorkCard.astro';
 import { getCollection } from 'astro:content';
+import { hashTilt, tiltStyle, viewName } from '@/lib/tilt';
 
 const work = (await getCollection('work')).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
 );
+
+const pageTilt = tiltStyle(hashTilt('work-index'));
+const vtHead = viewName(Astro.url.pathname, 'head');
 ---
 
 <BaseLayout
@@ -14,12 +18,17 @@ const work = (await getCollection('work')).sort(
 >
   <section class="page-head">
     <div class="container">
-      <p class="eyebrow">Case studies</p>
-      <h1 class="page-title">Selected work</h1>
-      <p class="page-lede">
-        A mix of public write-ups and password-protected client work. Each one covers the problem,
-        the constraints I was working inside, and the decisions I'd defend in a review.
-      </p>
+      <div
+        class="page-head-sheet sheet sheet--work stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">Case studies</p>
+        <h1 class="page-title">Selected work</h1>
+        <p class="page-lede">
+          A mix of public write-ups and password-protected client work. Each one covers the problem,
+          the constraints I was working inside, and the decisions I'd defend in a review.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -27,9 +36,9 @@ const work = (await getCollection('work')).sort(
     <div class="container">
       {
         work.length === 0 ? (
-          <p class="text-muted">No case studies yet.</p>
+          <p class="text-muted prop">No case studies yet.</p>
         ) : (
-          <div class="grid">
+          <div class="grid scatter">
             {work.map((entry) => (
               <WorkCard entry={entry} />
             ))}
@@ -42,26 +51,42 @@ const work = (await getCollection('work')).sort(
 
 <style>
   .page-head {
-    padding-block: var(--space-8) var(--space-6);
-    border-block-end: 2px solid var(--ink);
+    padding-block: var(--space-8) var(--space-7);
   }
 
   .page-title {
     font-size: var(--text-3xl);
-    margin-block-start: var(--space-3);
+    margin: 0;
   }
 
   .page-lede {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
-    color: var(--text-muted);
+    color: var(--text);
     max-width: 58ch;
-    margin-block-start: var(--space-3);
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
     gap: var(--space-7) var(--space-6);
+  }
+
+  @media (min-width: 50rem) {
+    /* Two cards a row, no more; a lone last card is centred at a sibling's
+       width rather than left hanging in the first column. */
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid > :global(:last-child:nth-child(odd)) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      inline-size: calc(50% - var(--space-6) / 2);
+    }
   }
 </style>

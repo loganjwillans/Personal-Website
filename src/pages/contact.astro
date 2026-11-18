@@ -1,0 +1,96 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/config';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
+
+const pageTilt = tiltStyle(hashTilt('contact'));
+const bodyPin = pinStyle(hashTilt('contact-body'));
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtBody = viewName(Astro.url.pathname, 'body');
+---
+
+<BaseLayout
+  title="Contact"
+  description="Email, LinkedIn and résumé for Logan Willans, product designer at IntelAgree."
+>
+  <section class="page-head">
+    <div class="container">
+      <div
+        class="page-head-sheet sheet stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">Contact</p>
+        <h1 class="page-title">Get in touch.</h1>
+        <p class="page-lede">
+          A question about the work, a contract design problem, or a role you think I'd be good at.
+          Email reaches me fastest, and I answer everything that isn't a pitch.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
+        <h2>Email</h2>
+        <p>
+          <a class="contact-email" href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+
+        <h2>LinkedIn</h2>
+        <ul role="list">
+          {
+            site.profiles.map((profile) => (
+              <li>
+                <a href={profile.href} rel="me noopener">
+                  {profile.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2>Résumé</h2>
+        <!-- TODO: swap this for a download link once the PDF is in public/. -->
+        <p>
+          The current one-page PDF covers the IntelAgree work and the contract toolkit. Ask and I'll
+          send it over.
+        </p>
+        <p>
+          <a
+            class="button"
+            href={`mailto:${site.email}?subject=${encodeURIComponent('Résumé request')}`}
+            style={markerStyle('contact:resume')}>Ask for the résumé</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin: 0;
+  }
+
+  .page-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text);
+    max-width: 56ch;
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
+  }
+
+  .contact-email {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+</style>

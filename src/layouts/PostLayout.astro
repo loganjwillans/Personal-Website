@@ -1,95 +1,105 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, readingLabel } from '@/lib/format';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'blog'>;
 }
 
 const { entry } = Astro.props;
-const { data, body } = entry;
+const { data, body, id } = entry;
+const headTilt = tiltStyle(hashTilt(id));
+const bodyPin = pinStyle(hashTilt(`${id}-body`));
+const footPin = pinStyle(hashTilt(`${id}-footer`));
+// Page-scoped names: nothing here can pair with another page's copy.
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtBody = viewName(Astro.url.pathname, 'body');
+const vtFoot = viewName(Astro.url.pathname, 'foot');
 ---
 
 <article class="post">
   <header class="post-head">
-    <div class="container container--narrow">
-      <a class="post-back" href="/blog/">← All posts</a>
-      <h1 class="post-title">{data.title}</h1>
-      <p class="post-description">{data.description}</p>
-      <div class="post-meta">
-        <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
-        <span aria-hidden="true">·</span>
-        <span>{readingLabel(body ?? '')}</span>
+    <div class="container">
+      <div
+        class="post-head-sheet sheet sheet--blog stack tilt pin pin--corners"
+        style={`${headTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <a class="button" href="/blog/" style={markerStyle(`post:${id}:all-posts`)}>
+          ← All posts
+        </a>
+        <h1 class="post-title">{data.title}</h1>
+        <p class="post-description">{data.description}</p>
+        <div class="post-meta">
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{readingLabel(body ?? '')}</span>
+          {
+            data.updatedDate && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>Updated {formatDate(data.updatedDate)}</span>
+              </>
+            )
+          }
+        </div>
         {
-          data.updatedDate && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>Updated {formatDate(data.updatedDate)}</span>
-            </>
+          data.tags.length > 0 && (
+            <ul role="list" class="post-tags">
+              {data.tags.map((tag) => (
+                <li>
+                  <a class="tag prop" href={`/blog/tags/${tag}/`}>
+                    {tag}
+                  </a>
+                </li>
+              ))}
+            </ul>
           )
         }
       </div>
-      {
-        data.tags.length > 0 && (
-          <ul role="list" class="post-tags">
-            {data.tags.map((tag) => (
-              <li>
-                <a class="tag" href={`/blog/tags/${tag}/`}>
-                  {tag}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
     </div>
   </header>
 
   <div class="container container--narrow">
-    <div class="prose">
+    <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
       <slot />
     </div>
 
-    <footer class="post-footer">
+    <footer
+      class="post-footer sheet pin pin--corners"
+      style={`${footPin}; --vt-name: ${vtFoot};`}
+    >
       <p>
         Written by Logan Willans. Replies and corrections are welcome at
         <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a>.
       </p>
-      <a class="button" href="/blog/">Read more posts</a>
+      <a class="button" href="/blog/" style={markerStyle(`post:${id}:more`)}>Read more posts</a>
     </footer>
   </div>
 </article>
 
 <style>
   .post-head {
-    padding-block: var(--space-8) var(--space-6);
-    border-block-end: 2px solid var(--ink);
-  }
-
-  .post-back {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    text-decoration: none;
-  }
-
-  .post-back:hover {
-    color: var(--text);
-    text-decoration: underline;
-    text-decoration-color: var(--ink);
-    text-underline-offset: 0.25em;
+    /* The hero's bottom padding is the only gap before the article: both detail
+       pages start their body one section-space below the sheet. */
+    padding-block: var(--space-8);
   }
 
   .post-title {
     font-size: var(--text-3xl);
-    margin-block-start: var(--space-5);
+    margin: 0;
     max-width: 24ch;
+  }
+
+  /* Give the "All posts" button room above the headline. */
+  .stack > .post-title {
+    margin-block-start: var(--space-6);
   }
 
   .post-description {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
-    color: var(--text-muted);
-    margin-block-start: var(--space-3);
+    color: var(--text);
     max-width: 54ch;
   }
 
@@ -97,7 +107,6 @@ const { data, body } = entry;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: var(--space-4);
     font-size: var(--text-xs);
     color: var(--text-muted);
     text-transform: uppercase;
@@ -108,34 +117,34 @@ const { data, body } = entry;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: var(--space-4);
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  .stack > .post-tags {
+    margin-block-start: var(--space-5);
+  }
+
+  /* Pill labels like the blog filters, but plain links: no marker scribble. */
   .post-tags .tag {
-    background: var(--surface);
-    border: 1px solid var(--ink);
-  }
-
-  .post-tags .tag:hover {
-    color: var(--text);
-    background: var(--surface-2);
-    border-color: var(--ink);
-  }
-
-  .post > .container--narrow {
-    padding-block-start: var(--space-6);
+    padding: 0.5em 1em;
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    background: transparent;
   }
 
   .post-footer {
     display: grid;
-    gap: var(--space-4);
-    margin-block-start: var(--space-8);
-    padding-block-start: var(--space-5);
-    border-block-start: 2px solid var(--ink);
+    gap: var(--space-5);
+    margin-block-start: var(--space-9);
     font-size: var(--text-sm);
     color: var(--text-muted);
+  }
+
+  .post-head-sheet,
+  .post-footer.sheet {
+    padding: var(--sheet-pad);
   }
 
   .post-footer p {
@@ -144,5 +153,9 @@ const { data, body } = entry;
 
   .post-footer .button {
     justify-self: start;
+  }
+
+  .prose.sheet {
+    padding: var(--sheet-pad);
   }
 </style>

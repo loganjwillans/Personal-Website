@@ -1,0 +1,92 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { hashTilt, tiltStyle, viewName } from '@/lib/tilt';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
+);
+
+const pageTilt = tiltStyle(hashTilt('projects-index'));
+const vtHead = viewName(Astro.url.pathname, 'head');
+---
+
+<BaseLayout
+  title="Projects"
+  description="Generative sketches made in Processing and p5.js â€” flow fields, noise, and other things with no stakeholder."
+>
+  <section class="page-head">
+    <div class="container">
+      <div
+        class="page-head-sheet sheet sheet--projects stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">Processing Â· p5.js</p>
+        <h1 class="page-title">Projects</h1>
+        <p class="page-lede">
+          Small programs I write to think. Most start in Processing, then get ported to p5.js so they
+          can run here. None of them solve a problem, which is the point.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      {
+        projects.length === 0 ? (
+          <p class="text-muted prop">No projects yet.</p>
+        ) : (
+          <div class="grid scatter">
+            {projects.map((entry) => (
+              <ProjectCard entry={entry} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin: 0;
+  }
+
+  .page-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text);
+    max-width: 56ch;
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-7) var(--space-6);
+  }
+
+  @media (min-width: 42rem) {
+    /* Two cards a row, no more; a lone last card is centred at a sibling's
+       width rather than left hanging in the first column. */
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid > :global(:last-child:nth-child(odd)) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      inline-size: calc(50% - var(--space-6) / 2);
+    }
+  }
+</style>

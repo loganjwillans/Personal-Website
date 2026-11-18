@@ -1,6 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { site } from '@/config';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
+
+const pageTilt = tiltStyle(hashTilt('about'));
+const bodyPin = pinStyle(hashTilt('about-body'));
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtBody = viewName(Astro.url.pathname, 'body');
 ---
 
 <BaseLayout
@@ -8,20 +14,25 @@ import { site } from '@/config';
   description="Logan Willans is a product designer at IntelAgree, working on contract management software."
 >
   <section class="page-head">
-    <div class="container container--narrow">
-      <p class="eyebrow">About</p>
-      <h1 class="page-title">Logan Willans</h1>
-      <p class="page-lede">
-        Product designer at IntelAgree. I work on contract management software — the intake,
-        review, negotiation and approval steps that sit between "we need a contract" and a
-        signature.
-      </p>
+    <div class="container">
+      <div
+        class="page-head-sheet sheet sheet--about stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">About</p>
+        <h1 class="page-title">Logan Willans</h1>
+        <p class="page-lede">
+          Product designer at IntelAgree. I work on contract management software â€” the intake,
+          review, negotiation and approval steps that sit between "we need a contract" and a
+          signature.
+        </p>
+      </div>
     </div>
   </section>
 
   <section class="section section--tight">
     <div class="container container--narrow">
-      <div class="prose">
+      <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
         <h2>What I actually do</h2>
         <p>
           Most of my work is enterprise software, which means the interesting constraints are never
@@ -57,8 +68,8 @@ import { site } from '@/config';
 
         <h2>Off the clock</h2>
         <p>
-          I write small generative programs in Processing and port them to p5.js — the
-          <a href="/experiments/">experiments</a> section is where those live. It keeps my hands in
+          I write small generative programs in Processing and port them to p5.js â€” the
+          <a href="/projects/">projects</a> section is where those live. It keeps my hands in
           code, and it is a reliable way to make something that doesn't need a stakeholder review.
         </p>
 
@@ -71,8 +82,14 @@ import { site } from '@/config';
       </div>
 
       <div class="about-actions">
-        <a class="button button--primary" href={`mailto:${site.email}`}>Email me</a>
-        <a class="button" href="/work/">See the work</a>
+        <a
+          class="button button--primary"
+          href={`mailto:${site.email}`}
+          style={markerStyle('about:email')}
+        >
+          Email me
+        </a>
+        <a class="button" href="/work/" style={markerStyle('about:work')}>See the work</a>
       </div>
     </div>
   </section>
@@ -80,27 +97,33 @@ import { site } from '@/config';
 
 <style>
   .page-head {
-    padding-block: var(--space-8) var(--space-5);
+    padding-block: var(--space-8) var(--space-7);
   }
 
   .page-title {
     font-size: var(--text-3xl);
-    margin-block-start: var(--space-3);
+    margin: 0;
   }
 
   .page-lede {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
-    color: var(--text-muted);
-    margin-block-start: var(--space-3);
+    color: var(--text);
+    max-width: 56ch;
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
   }
 
   .about-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin-block-start: var(--space-6);
-    padding-block-start: var(--space-5);
-    border-block-start: 2px solid var(--ink);
+    margin-block-start: var(--space-7);
+  }
+
+  .prose.sheet {
+    padding: var(--sheet-pad);
   }
 </style>

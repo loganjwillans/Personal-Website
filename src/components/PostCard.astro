@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDate } from '@/lib/format';
+import { hashTilt, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'blog'>;
@@ -8,9 +9,15 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data, id } = entry;
+const tilt = tiltStyle(hashTilt(id));
+const vtName = viewName(Astro.url.pathname, `post-${id}`);
 ---
 
-<article class="post-row">
+<article
+  class="post-row object pin pin--corners lift"
+  style={`${tilt}; --vt-name: ${vtName};`}
+  data-tags={data.tags.join('|')}
+>
   <h3 class="post-row__title">
     <a href={`/blog/${id}/`}>{data.title}</a>
   </h3>
@@ -30,33 +37,39 @@ const { data, id } = entry;
 
 <style>
   .post-row {
+    position: relative;
     display: grid;
-    gap: var(--space-2);
-    padding: var(--space-5);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    background-image: var(--speckle);
-    background-size: var(--speckle-size);
-    box-shadow: var(--shadow-key-sm);
-    transition:
-      transform var(--duration-2) var(--ease),
-      box-shadow var(--duration-2) var(--ease);
-  }
-
-  .post-row:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-key);
+    gap: var(--space-3);
+    /* The top margin is the pin's; the other sides match the sheet cards that
+       surround the list, so the printed content lines up across the page. */
+    padding: var(--pin-clearance) var(--sheet-pad) var(--sheet-pad);
   }
 
   .post-row__title {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     letter-spacing: var(--tracking-tight);
     margin: 0;
   }
 
   .post-row__title a {
     text-decoration: none;
+  }
+
+  /* One link per row: the title's hit area covers the whole card. */
+  .post-row__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .post-row__title a:focus-visible {
+    outline: none;
+  }
+
+  .post-row__title a:focus-visible::after {
+    outline: 3px solid var(--focus);
+    outline-offset: 6px;
+    border-radius: var(--radius-sharp);
   }
 
   .post-row__title a:hover {
@@ -66,8 +79,8 @@ const { data, id } = entry;
   }
 
   .post-row__summary {
-    color: var(--text-muted);
-    font-size: var(--text-sm);
+    color: var(--text);
+    font-size: var(--text-base);
     max-width: 58ch;
     margin: 0;
   }

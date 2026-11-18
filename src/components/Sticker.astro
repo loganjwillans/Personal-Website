@@ -1,0 +1,308 @@
+---
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { viewName } from '@/lib/tilt';
+
+// New files dropped into public/stickers are picked up on the next build.
+const stickerDir = join(process.cwd(), 'public', 'stickers');
+const stickers = readdirSync(stickerDir)
+  .filter((file) => /\.(png|jpe?g|webp|svg|gif)$/i.test(file))
+  .sort()
+  .map((file) => `/stickers/${file}`);
+
+// The board is re-pinned on every page: five stickers per page, each with a
+// page-scoped name so it un-pins with the cards and a fresh set pins on arrival.
+const names = Array.from({ length: 5 }, (_, index) =>
+  viewName(Astro.url.pathname, `sticker-${index + 1}`),
+);
+---
+
+<button
+  class="sticker-trigger"
+  type="button"
+  data-sticker-trigger
+  aria-label="Place a sticker"
+  title="Place a sticker"
+>
+  <svg class="sticker-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path
+      d="M13.5 2.5H20v6.5L11.2 18.8a2.4 2.4 0 0 1-3.4 0l-3.6-3.6a2.4 2.4 0 0 1 0-3.4L13.5 2.5Z"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linejoin="round"
+    ></path>
+    <path d="M16.2 5.8l2 2" stroke="currentColor" stroke-width="1.6"></path>
+    <path d="M6.6 14.2l3.2 3.2" stroke="currentColor" stroke-width="1.6"></path>
+  </svg>
+  <svg class="trash-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path d="M4.5 6.5h15M9 6.5V4.25h6V6.5M6.5 6.5l.9 13h9.2l.9-13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M10 10v6M14 10v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+  </svg>
+</button>
+
+<script define:vars={{ stickerPaths: stickers, transitionNames: names }}>
+  const MAX_STICKERS = 10;
+  const STICKER_SIZE = 144;
+  // Astro re-runs this inline script on every client-side navigation. Keep one
+  // board on window so copies share state; otherwise each copy wires its own
+  // trigger listener and one press drops several stickers at once.
+  const board = (window.__stickerBoard ??= { placed: [], nextIndex: 0, serial: 0 });
+  board.transitionNames = transitionNames;
+
+  function trigger() {
+    return document.querySelector('[data-sticker-trigger]');
+  }
+
+  function syncTrigger() {
+    const button = trigger();
+    if (!button) return;
+    button.classList.toggle(
+      'is-trash',
+      document.querySelector('[data-sticker].is-dragging') !== null,
+    );
+  }
+
+  function removeSticker(id) {
+    document.querySelector(`[data-sticker-id="${id}"]`)?.remove();
+    board.placed = board.placed.filter((sticker) => sticker.id !== id);
+    syncTrigger();
+  }
+
+  function makeSticker(x, y, src, name, bucket) {
+    const sticker = document.createElement('div');
+    const id = ++board.serial;
+    sticker.className = 'sticker';
+    sticker.setAttribute('data-sticker', '');
+    sticker.setAttribute('data-sticker-id', String(id));
+    sticker.setAttribute('aria-hidden', 'true');
+    sticker.style.left = `${x}px`;
+    sticker.style.top = `${y}px`;
+    // The serial makes every instance unique, so even a repeat visit to the same
+    // route can never pair an old sticker with a new one and morph between them.
+    sticker.style.setProperty('--vt-name', `${name || 'sticker'}-${id}`);
+    // Reuse the board's delay buckets so each sticker peels and re-pins on its
+    // own beat instead of the five moving as one clump.
+    sticker.style.setProperty('view-transition-class', `vt vt-sticker${bucket ? ` vt-d${bucket}` : ''}`);
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    img.draggable = false;
+    sticker.appendChild(img);
+    document.body.appendChild(sticker);
+
+    const entry = { id, x, y, src, name };
+    board.placed.push(entry);
+    bindDrag(sticker, entry);
+    return entry;
+  }
+
+  function addSticker(x, y, src) {
+    // One press adds exactly one. At the cap the oldest is retired, so the
+    // board never holds more than MAX_STICKERS.
+    if (board.placed.length >= MAX_STICKERS) removeSticker(board.placed[0].id);
+    makeSticker(x, y, src, undefined, board.placed.length % 5);
+  }
+
+  function bindDrag(sticker, entry) {
+    let pointerId = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    sticker.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      pointerId = event.pointerId;
+      sticker.setPointerCapture(pointerId);
+      const rect = sticker.getBoundingClientRect();
+      offsetX = event.clientX - rect.left;
+      offsetY = event.clientY - rect.top;
+      sticker.classList.add('is-dragging');
+      syncTrigger(); // the icon becomes a trashcan for the whole drag
+      event.preventDefault();
+    });
+
+    sticker.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== pointerId) return;
+      entry.x = event.clientX + window.scrollX - offsetX;
+      entry.y = event.clientY + window.scrollY - offsetY;
+      sticker.style.left = `${entry.x}px`;
+      sticker.style.top = `${entry.y}px`;
+    });
+
+    const finish = (event) => {
+      if (event.pointerId !== pointerId) return;
+      pointerId = null;
+      sticker.classList.remove('is-dragging');
+
+      const button = trigger();
+      const rect = button?.getBoundingClientRect();
+      const overTrigger = rect && event.clientX >= rect.left - 8 && event.clientX <= rect.right + 8 &&
+        event.clientY >= rect.top - 8 && event.clientY <= rect.bottom + 8;
+
+      if (overTrigger) {
+        removeSticker(entry.id);
+      } else {
+        entry.x = Math.max(4, Math.min(entry.x, document.documentElement.scrollWidth - STICKER_SIZE - 4));
+        entry.y = Math.max(4, Math.min(entry.y, document.documentElement.scrollHeight - STICKER_SIZE - 4));
+        sticker.style.left = `${entry.x}px`;
+        sticker.style.top = `${entry.y}px`;
+        syncTrigger();
+      }
+    };
+    sticker.addEventListener('pointerup', finish);
+    sticker.addEventListener('pointercancel', finish);
+  }
+
+  // Tucked into the gutters: the page text starts ~9.5rem in from each edge,
+  // so a 9rem sticker in either gutter never sits on top of the content.
+  function seedStickers() {
+    // The sticker easter egg is desktop-only, like its trigger.
+    if (!stickerPaths.length || board.placed.length || !window.matchMedia('(min-width: 64rem)').matches) return;
+    // Anchor to the paper, not the viewport. The sheet column is centred with a
+    // max width, so on a wide monitor the gutters grow; viewport-relative spots
+    // would leave the stickers hugging the screen edge far from the content.
+    const sheets = [...document.querySelectorAll('.sheet')];
+    const contentLeft = sheets.length
+      ? Math.min(...sheets.map((el) => el.getBoundingClientRect().left)) + window.scrollX
+      : window.innerWidth * 0.1;
+    const contentRight = sheets.length
+      ? Math.max(...sheets.map((el) => el.getBoundingClientRect().right)) + window.scrollX
+      : window.innerWidth * 0.9;
+    // How far a sticker may sit from the paper edge: anywhere out in the cork
+    // (right up to the screen edge) or a little way onto the paper. Copy starts
+    // ~3rem in, so the overlap still clears every word.
+    const maxGap = Math.max(0, contentLeft - STICKER_SIZE - 8);
+    const overlap = 32;
+    // Pick a side and a height freely for each one — no bands, no alternating
+    // pattern. A few retries keep two on the same side from landing on top of
+    // each other, without making the layout predictable.
+    const top = 200;
+    const bottom = Math.max(top + 5 * 200, document.documentElement.scrollHeight - 300);
+    const shuffled = stickerPaths.slice().sort(() => Math.random() - 0.5);
+    const chosen = [];
+    for (let index = 0; index < 5; index += 1) {
+      const onLeft = Math.random() < 0.5;
+      let y = top;
+      for (let tries = 0; tries < 12; tries += 1) {
+        y = top + Math.random() * (bottom - top);
+        if (!chosen.some((spot) => spot.onLeft === onLeft && Math.abs(spot.y - y) < STICKER_SIZE + 40)) {
+          break;
+        }
+      }
+      chosen.push({ onLeft, y });
+      // Each one gets its own inset instead of a shared column, so they read as
+      // scattered pins rather than two neat rows hugging fixed x positions.
+      const inset = -maxGap + Math.random() * (maxGap + overlap);
+      const jitter = Math.random() * 20 - 10;
+      const rawX = onLeft
+        ? contentLeft + inset - STICKER_SIZE + jitter
+        : contentRight - inset + jitter;
+      const x = Math.max(8, Math.min(rawX, document.documentElement.clientWidth - STICKER_SIZE - 8));
+      makeSticker(x, y, shuffled[index % shuffled.length], board.transitionNames[index], index);
+    }
+  }
+
+  function onTriggerClick() {
+    if (!stickerPaths.length) return;
+    const src = stickerPaths[board.nextIndex % stickerPaths.length];
+    board.nextIndex += 1;
+    const button = trigger();
+    const rect = button?.getBoundingClientRect();
+    const x = rect ? Math.max(16, rect.left + window.scrollX - STICKER_SIZE - 20) : window.innerWidth - STICKER_SIZE - 24;
+    const y = rect ? rect.bottom + window.scrollY + 20 : window.scrollY + 140;
+    addSticker(x, y, src);
+  }
+
+  if (!board.pageLoadWired) {
+    board.pageLoadWired = true;
+    document.addEventListener('astro:page-load', () => {
+      // Nothing carries over: the old set peels with the cards and this page's
+      // five are pinned using the names refreshed at the top of each script run.
+      document.querySelectorAll('[data-sticker]').forEach((element) => element.remove());
+      board.placed = [];
+      const button = trigger();
+      if (button && !button.dataset.stickerWired) {
+        button.dataset.stickerWired = 'true';
+        button.addEventListener('click', onTriggerClick);
+      }
+      seedStickers();
+      syncTrigger();
+    });
+  }
+</script>
+
+<style>
+  .sticker-trigger {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    background: none;
+    color: var(--text-muted);
+    transition: color var(--duration-1) var(--ease);
+  }
+
+  .sticker-trigger:hover,
+  .sticker-trigger.is-trash {
+    color: var(--text);
+  }
+
+  .sticker-trigger .trash-icon {
+    display: none;
+  }
+
+  .sticker-trigger.is-trash .sticker-icon {
+    display: none;
+  }
+
+  .sticker-trigger.is-trash .trash-icon {
+    display: block;
+  }
+
+  .sticker-trigger svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  :global(.sticker) {
+    position: absolute;
+    z-index: 10;
+    inline-size: 9rem;
+    block-size: auto;
+    touch-action: none;
+    cursor: grab;
+    filter: drop-shadow(0 6px 8px color-mix(in srgb, var(--scrim) 45%, transparent));
+    transform: rotate(-4deg);
+    user-select: none;
+    view-transition-name: var(--vt-name);
+    view-transition-class: vt;
+  }
+
+  :global(.sticker.is-dragging) {
+    /* Above the glass nav while held: the icon it is dragged onto lives there. */
+    z-index: 120;
+    cursor: grabbing;
+    transform: rotate(2deg) scale(1.05);
+  }
+
+  :global(.sticker img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (max-width: 63.999rem) {
+    .sticker-trigger {
+      display: none;
+    }
+
+    /* Fresh loads are gated in JS, but a desktop→mobile resize leaves already
+       seeded stickers in the DOM: hide them here too. */
+    :global(.sticker) {
+      display: none;
+    }
+  }
+</style>

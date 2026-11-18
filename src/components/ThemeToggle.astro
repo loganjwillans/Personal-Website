@@ -7,7 +7,7 @@
 >
   <svg class="icon icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
-    <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <g stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
       <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2"></path>
       <path d="M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
     </g>
@@ -18,36 +18,44 @@
       fill="none"
       stroke="currentColor"
       stroke-width="1.6"
-      stroke-linejoin="round"></path>
+      stroke-linejoin="round"
+    ></path>
   </svg>
 </button>
 
 <script>
-  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  // Bundled scripts run once per document: bind to the new button after each
+  // client-side navigation, and refresh its label from the current theme.
+  function init() {
+    const buttonEl = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+    if (!buttonEl) return;
+    const button: HTMLButtonElement = buttonEl;
 
-  function currentTheme(): 'light' | 'dark' {
-    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-  }
-
-  function label(theme: 'light' | 'dark') {
-    if (!button) return;
-    const next = theme === 'dark' ? 'light' : 'dark';
-    button.setAttribute('aria-label', `Switch to ${next} theme`);
-    button.dataset.current = theme;
-  }
-
-  label(currentTheme());
-
-  button?.addEventListener('click', () => {
-    const next = currentTheme() === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem('theme', next);
-    } catch {
-      /* private mode — the toggle still works for this page view */
+    function currentTheme(): 'light' | 'dark' {
+      return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
     }
-    label(next);
-  });
+
+    function label(theme: 'light' | 'dark') {
+      const next = theme === 'dark' ? 'light' : 'dark';
+      button.setAttribute('aria-label', `Switch to ${next} theme`);
+      button.dataset.current = theme;
+    }
+
+    label(currentTheme());
+
+    button.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* private mode — the toggle still works for this page view */
+      }
+      label(next);
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
@@ -56,26 +64,14 @@
     place-items: center;
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: var(--radius-md);
-    border: 2px solid var(--ink);
-    background: var(--surface);
+    background: none;
+    border: 0;
     color: var(--text-muted);
-    box-shadow: var(--shadow-key-sm);
-    transition:
-      transform var(--duration-1) var(--ease),
-      box-shadow var(--duration-1) var(--ease),
-      color var(--duration-1) var(--ease);
+    transition: color var(--duration-1) var(--ease);
   }
 
   .theme-toggle:hover {
     color: var(--text);
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 var(--shadow-ink);
-  }
-
-  .theme-toggle:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 var(--shadow-ink);
   }
 
   .icon {

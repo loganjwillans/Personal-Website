@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '@/styles/global.css';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
@@ -52,13 +53,15 @@ const ogImage = absoluteUrl(image);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <meta name="theme-color" content="#F2ECDF" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#C9A06B" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#2A211B" media="(prefers-color-scheme: dark)" />
+
+    <ClientRouter />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap"
       rel="stylesheet"
     />
 
@@ -67,6 +70,7 @@ const ogImage = absoluteUrl(image);
 
     <script is:inline>
       (function () {
+        document.documentElement.classList.add('js');
         try {
           var stored = localStorage.getItem('theme');
           var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -77,12 +81,45 @@ const ogImage = absoluteUrl(image);
         }
       })();
     </script>
+
+    <script is:inline>
+      // The client router rebuilds <html> from the fetched document, so carry the
+      // theme, the script flag and the cork's scroll phase over before the swap
+      // instead of after it.
+      document.addEventListener('astro:before-swap', (event) => {
+        const root = document.documentElement;
+        const incoming = event.newDocument.documentElement;
+        incoming.dataset.theme = root.dataset.theme;
+        incoming.className = root.className;
+        // The cork is pinned to the document, so a new page opening at the top
+        // must show the grain the old page had at its own scroll: shift the
+        // background up by exactly that scroll. Going back restores the scroll
+        // the entry was left on, so it takes the phase it was left with.
+        const offset = parseFloat(getComputedStyle(root).getPropertyValue('--bg-offset')) || 0;
+        const carried =
+          event.navigationType === 'traverse'
+            ? parseFloat(history.state && history.state.bgOffset) || 0
+            : offset - window.scrollY;
+        incoming.style.setProperty('--bg-offset', `${carried}px`);
+        if (event.navigationType !== 'traverse') {
+          // Keep this entry's phase, so the next visit back finds the same board.
+          history.replaceState({ ...history.state, bgOffset: offset }, '');
+        }
+      });
+
+      // Client-side navigation keeps the document: put focus back at the top of
+      // the new page, where a full page load would have left it.
+      document.addEventListener('astro:after-swap', () => {
+        if (location.hash) return;
+        document.getElementById('main')?.focus({ preventScroll: true });
+      });
+    </script>
   </head>
 
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />

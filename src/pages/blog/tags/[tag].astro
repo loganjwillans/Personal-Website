@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
+import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -18,20 +19,30 @@ const { tag } = Astro.props;
 const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tags.includes(tag))).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const pageTilt = tiltStyle(hashTilt(`blog-tags-${tag}`));
+const vtHead = viewName(Astro.url.pathname, 'head');
 ---
 
 <BaseLayout title={`Posts tagged “${tag}”`} description={`Writing tagged ${tag}.`}>
   <section class="page-head">
-    <div class="container container--narrow">
-      <a class="back" href="/blog/">← All posts</a>
-      <h1 class="page-title">Tagged “{tag}”</h1>
-      <p class="page-lede">{posts.length} post{posts.length === 1 ? '' : 's'}.</p>
+    <div class="container">
+      <div
+        class="page-head-sheet sheet sheet--blog stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <a class="button" href="/blog/" style={markerStyle(`tag:${tag}:all-posts`)}>
+          ← All posts
+        </a>
+        <h1 class="page-title">Tagged “{tag}”</h1>
+        <p class="page-lede">{posts.length} post{posts.length === 1 ? '' : 's'}.</p>
+      </div>
     </div>
   </section>
 
   <section class="section section--tight">
     <div class="container container--narrow">
-      <div class="post-list">
+      <div class="post-list scatter">
         {posts.map((entry) => <PostCard entry={entry} />)}
       </div>
     </div>
@@ -40,35 +51,24 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tag
 
 <style>
   .page-head {
-    padding-block: var(--space-8) var(--space-5);
-    border-block-end: 2px solid var(--ink);
-  }
-
-  .back {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    text-decoration: none;
-  }
-
-  .back:hover {
-    color: var(--text);
-    text-decoration: underline;
-    text-decoration-color: var(--ink);
-    text-underline-offset: 0.25em;
+    padding-block: var(--space-8) var(--space-7);
   }
 
   .page-title {
     font-size: var(--text-3xl);
-    margin-block-start: var(--space-4);
+    margin: 0;
   }
 
   .page-lede {
-    color: var(--text-muted);
-    margin-block-start: var(--space-2);
+    color: var(--text);
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
   }
 
   .post-list {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
 </style>

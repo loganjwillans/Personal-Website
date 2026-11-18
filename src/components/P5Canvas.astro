@@ -1,4 +1,6 @@
 ---
+import { markerStyle, viewName } from '@/lib/tilt';
+
 interface Props {
   src: string;
   poster: string;
@@ -6,9 +8,10 @@ interface Props {
 }
 
 const { src, poster, title } = Astro.props;
+const vtName = viewName(Astro.url.pathname, 'sketch');
 ---
 
-<div class="sketch" data-sketch data-src={src} data-title={title}>
+<div class="sketch" data-sketch data-src={src} data-title={title} style={`--vt-name: ${vtName}`}>
   <div class="sketch__stage">
     <img
       class="sketch__poster"
@@ -20,7 +23,12 @@ const { src, poster, title } = Astro.props;
       decoding="async"
     />
     <div class="sketch__overlay" data-sketch-overlay>
-      <button class="button button--primary sketch__play" type="button" data-sketch-play>
+      <button
+        class="button button--primary sketch__play"
+        type="button"
+        data-sketch-play
+        style={markerStyle(`sketch:${title}:play`)}
+      >
         <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
           <path d="M4 2.6 13 8l-9 5.4Z" fill="currentColor"></path>
         </svg>
@@ -30,16 +38,26 @@ const { src, poster, title } = Astro.props;
     </div>
   </div>
 
-  <div class="sketch__controls" data-sketch-controls hidden>
+  <div class="sketch__controls object" data-sketch-controls hidden>
     <span class="sketch__status">Running</span>
-    <button class="button button--quiet" type="button" data-sketch-stop>Stop</button>
+    <button
+      class="button button--quiet"
+      type="button"
+      data-sketch-stop
+      style={markerStyle(`sketch:${title}:stop`)}
+    >
+      Stop
+    </button>
   </div>
 </div>
 
 <script>
-  const sketch = document.querySelector<HTMLElement>('[data-sketch]');
+  // Bundled scripts run once per document; bind again on every page load so the
+  // sketch still plays after a client-side navigation.
+  function init() {
+    const sketch = document.querySelector<HTMLElement>('[data-sketch]');
+    if (!sketch) return;
 
-  if (sketch) {
     const stage = sketch.querySelector<HTMLElement>('.sketch__stage');
     const overlay = sketch.querySelector<HTMLElement>('[data-sketch-overlay]');
     const controls = sketch.querySelector<HTMLElement>('[data-sketch-controls]');
@@ -73,6 +91,8 @@ const { src, poster, title } = Astro.props;
       play?.focus();
     });
   }
+
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
@@ -84,11 +104,8 @@ const { src, poster, title } = Astro.props;
   .sketch__stage {
     position: relative;
     aspect-ratio: 4 / 3;
-    border-radius: var(--radius-lg);
     overflow: hidden;
-    border: 2px solid var(--ink);
     background: var(--scrim);
-    box-shadow: var(--shadow-key);
   }
 
   .sketch__poster,
@@ -128,6 +145,12 @@ const { src, poster, title } = Astro.props;
     max-width: 32ch;
   }
 
+  .sketch__play {
+    /* The overlay is always a dark scrim, so the button's rule is the scrim's
+       own ink rather than the page ink. */
+    border-color: var(--on-scrim);
+  }
+
   .sketch__play svg {
     margin-inline-end: 0.4em;
   }
@@ -138,10 +161,6 @@ const { src, poster, title } = Astro.props;
     justify-content: space-between;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    box-shadow: var(--shadow-key-sm);
   }
 
   .sketch__status {

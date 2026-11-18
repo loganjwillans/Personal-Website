@@ -1,27 +1,36 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
+
+const pageTilt = tiltStyle(hashTilt('404'));
+const vtHead = viewName(Astro.url.pathname, 'head');
 ---
 
 <BaseLayout title="Page not found" noindex>
   <section class="not-found">
-    <div class="container container--narrow">
-      <p class="eyebrow">404</p>
-      <svg class="not-found__motif" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-        <circle cx="32" cy="32" r="28" fill="var(--accent-3)"></circle>
-        <path d="M32 10 36 26H28Z" fill="var(--surface)"></path>
-        <path d="M32 54 28 38h8Z" fill="var(--surface)"></path>
-        <path d="M10 32 26 28v8Z" fill="var(--surface)"></path>
-        <path d="M54 32 38 36v-8Z" fill="var(--surface)"></path>
-        <circle cx="32" cy="32" r="10" fill="var(--ink)"></circle>
-      </svg>
-      <h1 class="title">This page doesn't exist.</h1>
-      <p class="lede">
-        Either it moved, or a link is wrong. The work and the writing are still where you left them.
-      </p>
-      <div class="actions">
-        <a class="button button--primary" href="/">Home</a>
-        <a class="button" href="/work/">Work</a>
-        <a class="button" href="/blog/">Blog</a>
+    <div class="container">
+      <div
+        class="not-found-sheet sheet sheet--red stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">404</p>
+        <img
+          class="not-found__motif"
+          src="/logo.svg"
+          alt=""
+          width="185"
+          height="90"
+          draggable="false"
+        />
+        <h1 class="title">This page doesn't exist.</h1>
+        <p class="lede">
+          Either it moved, or a link is wrong. The work and the writing are still where you left them.
+        </p>
+        <div class="actions">
+          <a class="button button--primary" href="/" style={markerStyle('404:home')}>Home</a>
+          <a class="button" href="/work/" style={markerStyle('404:work')}>Work</a>
+          <a class="button" href="/blog/" style={markerStyle('404:blog')}>Blog</a>
+        </div>
       </div>
     </div>
   </section>
@@ -33,20 +42,23 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   }
 
   .not-found__motif {
-    width: 4rem;
-    height: 4rem;
-    margin-block-start: var(--space-4);
-    filter: drop-shadow(3px 3px 0 var(--shadow-ink));
+    display: block;
+    width: 9rem;
+    height: auto;
+    margin: 0;
+  }
+
+  .not-found-sheet {
+    padding: var(--sheet-pad);
   }
 
   .title {
     font-size: var(--text-3xl);
-    margin-block-start: var(--space-3);
+    margin: 0;
   }
 
   .lede {
     color: var(--text-muted);
-    margin-block-start: var(--space-3);
     max-width: 48ch;
   }
 
@@ -54,6 +66,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin-block-start: var(--space-6);
+    margin: 0;
   }
 </style>

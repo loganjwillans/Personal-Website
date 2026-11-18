@@ -1,6 +1,6 @@
 # brainvat.xyz
 
-Portfolio for Logan Willans — product design case studies, generative experiments, and a blog.
+Portfolio for Logan Willans â€” product design case studies, generative Projects, and a blog.
 Astro, static output, deployed to GitHub Pages on a custom domain.
 
 ## Commands
@@ -9,20 +9,20 @@ Astro, static output, deployed to GitHub Pages on a custom domain.
 | --- | --- |
 | `npm run dev` | Local dev server at `localhost:4321` |
 | `npm run build` | Builds to `dist/` (this is what CI runs) |
-| `npm run preview` | Serves the built site — use this to check the password gate |
+| `npm run preview` | Serves the built site â€” use this to check the password gate |
 | `npm run check` | Type-check Astro components and content schemas |
 
 ## Structure
 
 ```
-src/config.ts              Name, role, email, links, nav — edit this first
-src/styles/tokens.css      Colour, type, spacing — the brand goes here
+src/config.ts              Name, role, email, links, nav â€” edit this first
+src/styles/tokens.css      Colour, type, spacing â€” the brand goes here
 src/content/work/          Case studies (MDX)
 src/content/blog/          Posts (MDX)
-src/content/experiments/   Experiment write-ups (MD)
+src/content/Projects/   Project write-ups (MD)
 src/pages/                 Routes
 src/components/            UI, including case-study/ building blocks
-public/experiments/        p5 sketches (one folder each)
+public/Projects/        p5 sketches (one folder each)
 integrations/protect.ts    Encrypts protected case studies at build time
 ```
 
@@ -60,7 +60,7 @@ import MetricGrid from '@/components/case-study/MetricGrid.astro';
   Why you decided it.
 </Decision>
 
-<Figure src="/images/work/detail.svg" alt="…" caption="…" />
+<Figure src="/images/work/detail.svg" alt="â€¦" caption="â€¦" />
 
 <MetricGrid items={[{ value: '41%', label: 'faster', note: 'median' }]} />
 ```
@@ -75,7 +75,7 @@ protected: true
 ```
 
 The password comes from an environment variable named after the file:
-`my-case-study.mdx` → `CASE_STUDY_PASSWORD_MY_CASE_STUDY`.
+`my-case-study.mdx` â†’ `CASE_STUDY_PASSWORD_MY_CASE_STUDY`.
 
 - Locally: put it in `.env` (gitignored). `.env.example` shows the shape.
 - On deploy: add a repository secret with the same name.
@@ -89,29 +89,29 @@ repository, and anything you publish may still be covered by an NDA. Clear the w
 employer before adding it. If a study is genuinely sensitive, keep it off the public internet.
 
 If a password is missing at build time, the page builds with its body withheld and a warning is
-logged — the plaintext is never published unencrypted.
+logged â€” the plaintext is never published unencrypted.
 
 ### A blog post
 
 `src/content/blog/my-post.mdx` with `title`, `description`, `pubDate`, optional `tags` and
 `updatedDate`. Set `draft: true` to keep it out of production builds.
 
-### An experiment
+### An Project
 
-1. Create `public/experiments/my-sketch/` with `sketch.html` and `sketch.js`. p5 lives once at
-   `public/experiments/vendor/p5.min.js`, so sketches share it. Keep the runner named
-   `sketch.html` — an `index.html` there would collide with the experiment's page route.
+1. Create `public/Projects/my-sketch/` with `sketch.html` and `sketch.js`. p5 lives once at
+   `public/Projects/vendor/p5.min.js`, so sketches share it. Keep the runner named
+   `sketch.html` â€” an `index.html` there would collide with the Project's page route.
 2. Export a poster frame as SVG or PNG next to them.
-3. Create `src/content/experiments/my-sketch.md` pointing at both.
+3. Create `src/content/Projects/my-sketch.md` pointing at both.
 
 The canvas does not load until the visitor presses play, and the iframe is removed when they stop.
 
 ## Deploying
 
 1. Push this repo to GitHub.
-2. Settings → Pages → Source: **GitHub Actions**.
-3. Settings → Pages → Custom domain: `brainvat.xyz`.
-4. Add the password secret under Settings → Secrets and variables → Actions.
+2. Settings â†’ Pages â†’ Source: **GitHub Actions**.
+3. Settings â†’ Pages â†’ Custom domain: `brainvat.xyz`.
+4. Add the password secret under Settings â†’ Secrets and variables â†’ Actions.
 5. DNS at the registrar:
 
 | Type | Name | Value |
@@ -133,10 +133,10 @@ Tick **Enforce HTTPS** once the certificate is issued.
 ## Before launch
 
 - [ ] Replace the two sample case studies in `src/content/work/` (they are marked
-      `placeholder: true`, which shows a warning banner — remove the flag or delete the files).
+      `placeholder: true`, which shows a warning banner â€” remove the flag or delete the files).
 - [ ] Replace the three sample posts in `src/content/blog/`.
 - [ ] Add profile links in `src/config.ts` (`TODO`).
 - [ ] Fill in the `TODO` notes on the about page.
 - [ ] Change the demo password in `.env` and the repository secret.
-- [ ] Drop real brand values into `src/styles/tokens.css` (`--font-display`, `--accent`, …).
+- [ ] Drop real brand values into `src/styles/tokens.css` (`--font-display`, `--accent`, â€¦).
 - [ ] Replace `public/og-default.png` with a proper share image.

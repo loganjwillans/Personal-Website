@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import LockIcon from '@/components/LockIcon.astro';
+import { hashTilt, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'work'>;
@@ -10,9 +11,16 @@ interface Props {
 
 const { entry, compact = false } = Astro.props;
 const { data, id } = entry;
+const tilt = tiltStyle(hashTilt(id));
+// Page-scoped: home and /work/ never share a name, so the card peels on one
+// page and is pinned on the other instead of morphing between them.
+const vtName = viewName(Astro.url.pathname, `work-${id}`);
 ---
 
-<article class:list={['card', { 'card--compact': compact }]}>
+<article
+  class:list={['card object pin lift', { 'card--compact': compact }]}
+  style={`${tilt}; --vt-name: ${vtName};`}
+>
   {
     data.cover ? (
       <img
@@ -35,7 +43,7 @@ const { data, id } = entry;
       {data.client ? <span aria-hidden="true">·</span> : null}
       {data.client ? <span>{data.client}</span> : null}
       {data.protected ? (
-        <span class="lock-badge"><LockIcon size={11} /> Protected</span>
+        <span class="lock-badge prop"><LockIcon size={11} /> Protected</span>
       ) : null}
     </div>
 
@@ -49,7 +57,7 @@ const { data, id } = entry;
       data.tags.length > 0 && (
         <ul role="list" class="card__tags">
           {data.tags.map((tag) => (
-            <li class="tag">{tag}</li>
+            <li class="tag prop">{tag}</li>
           ))}
         </ul>
       )
@@ -61,43 +69,19 @@ const { data, id } = entry;
   .card {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-5);
     position: relative;
-    background: var(--surface);
-    background-image: var(--speckle);
-    background-size: var(--speckle-size);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-key);
-    transition:
-      transform var(--duration-2) var(--ease),
-      box-shadow var(--duration-2) var(--ease);
-  }
-
-  .card:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--shadow-ink);
-  }
-
-  .card:active {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--shadow-ink);
+    /* The top margin is the pin's: the head sits in it, clear of the print. */
+    padding: var(--pin-clearance) var(--space-5) var(--space-5);
   }
 
   .card__media {
+    /* Printed straight on the card's paper: no frame, and no movement of its
+       own — only the card lifts. */
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
-    background: var(--surface-2);
-    border: 2px solid var(--ink);
-    border-radius: var(--radius-md);
-    transition: transform var(--duration-2) var(--ease);
-  }
-
-  .card:hover .card__media {
-    transform: scale(1.012);
   }
 
   .card__media--empty {
@@ -106,7 +90,7 @@ const { data, id } = entry;
 
   .card__body {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
 
   .card__meta {
@@ -120,10 +104,7 @@ const { data, id } = entry;
     letter-spacing: var(--tracking-wide);
   }
 
-  .card__meta .lock-badge {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
-  }
+
 
   .card__title {
     font-size: var(--text-lg);
@@ -149,12 +130,12 @@ const { data, id } = entry;
   .card__title a:focus-visible::after {
     outline: 3px solid var(--focus);
     outline-offset: 6px;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-sharp);
   }
 
   .card__summary {
     font-size: var(--text-sm);
-    color: var(--text-muted);
+    color: var(--text);
     margin: 0;
     max-width: 48ch;
   }
@@ -163,18 +144,15 @@ const { data, id } = entry;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: var(--space-2);
+    margin-block-start: var(--space-3);
     padding: 0;
     list-style: none;
   }
 
-  .card__tags .tag {
-    background: var(--surface-2);
-    border: 1px solid var(--ink);
-  }
+
 
   .card--compact {
     gap: var(--space-3);
-    padding: var(--space-3);
+    padding: var(--pin-clearance) var(--space-3) var(--space-3);
   }
 </style>

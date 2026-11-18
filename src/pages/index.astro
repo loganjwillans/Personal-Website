@@ -2,9 +2,10 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import WorkCard from '@/components/WorkCard.astro';
 import PostCard from '@/components/PostCard.astro';
-import ExperimentCard from '@/components/ExperimentCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 import { site } from '@/config';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const featured = work.filter((entry) => entry.data.featured);
@@ -14,71 +15,82 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
-const experiments = (await getCollection('experiments'))
+const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 2);
+
+const heroTilt = tiltStyle(hashTilt('hero'));
+const workPin = pinStyle(hashTilt('section-work'));
+const projectsPin = pinStyle(hashTilt('section-projects'));
+const writingPin = pinStyle(hashTilt('section-writing'));
+
+// Page-scoped names: nothing on this page can pair with another page's copy.
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtWork = viewName(Astro.url.pathname, 'banner-work');
+const vtProjects = viewName(Astro.url.pathname, 'banner-projects');
+const vtWriting = viewName(Astro.url.pathname, 'banner-writing');
 ---
 
 <BaseLayout>
   <section class="hero">
-    <svg class="hero-motif" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-      <g fill="var(--accent-4)">
-        <path d="M60 14 66 38H54Z"></path>
-        <path d="M60 106 54 82h12Z"></path>
-        <path d="M14 60 38 54v12Z"></path>
-        <path d="M106 60 82 66V54Z"></path>
-      </g>
-      <g fill="var(--accent-2)">
-        <path d="M28 28 42 36 34 50Z"></path>
-        <path d="M92 28 86 42 72 34Z"></path>
-        <path d="M28 92 36 78 50 86Z"></path>
-        <path d="M92 92 78 84 86 70Z"></path>
-      </g>
-      <circle cx="60" cy="60" r="18" fill="var(--accent)"></circle>
-      <circle cx="60" cy="60" r="8" fill="var(--ink)"></circle>
-    </svg>
     <div class="container hero-inner">
-      <p class="eyebrow">{site.name} · {site.role} at {site.employer}</p>
-      <h1 class="hero-title">Designing the systems behind contract work.</h1>
-      <p class="hero-lede">
-        I'm a product designer at IntelAgree, where I work on the intake, review and approval
-        steps that happen long before anyone signs anything. This is where I think in public
-        about that work, and build things that have nothing to do with it.
-      </p>
-      <div class="cluster hero-actions">
-        <a class="button button--primary" href="/work/">View selected work</a>
-        <a class="button" href={`mailto:${site.email}`}>Get in touch</a>
+      <div
+        class="hero-sheet sheet tilt stack pin pin--corners"
+        style={`${heroTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">{site.name} Â· {site.role} at {site.employer}</p>
+        <h1 class="hero-title">Designing the systems behind contract work.</h1>
+        <p class="hero-lede">
+          I'm a product designer at IntelAgree, where I work on the intake, review and approval
+          steps that happen long before anyone signs anything. This is where I think in public
+          about that work, and build things that have nothing to do with it.
+        </p>
+        <div class="cluster hero-actions">
+          <a class="button" href="/contact/" style={markerStyle('hero:contact', 'var(--yellow)')}>
+            Get in touch
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <h2 class="section-title">Selected work</h2>
-        <a class="section-link" href="/work/">All case studies →</a>
+      <div
+        class="section-head-sheet sheet sheet--work pin pin--corners"
+        style={`${workPin}; --vt-name: ${vtWork}; view-transition-class: vt vt-d1;`}
+      >
+        <div class="section-head">
+          <h2 class="section-title prop">Selected work</h2>
+          <a class="button" href="/work/" style={markerStyle('section:work:all', 'var(--route-work)')}>
+            All case studies →
+          </a>
+        </div>
       </div>
-      <div class="grid grid--2">
+      <div class="grid grid--2 scatter">
         {selected.map((entry) => <WorkCard entry={entry} />)}
       </div>
     </div>
   </section>
 
   {
-    experiments.length > 0 && (
+    projects.length > 0 && (
       <section class="section section--tight">
         <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">Experiments</h2>
-            <a class="section-link" href="/experiments/">All experiments →</a>
+          <div
+            class="section-head-sheet sheet sheet--projects pin pin--corners"
+            style={`${projectsPin}; --vt-name: ${vtProjects}; view-transition-class: vt vt-d2;`}
+          >
+            <div class="section-head">
+              <h2 class="section-title prop">Projects</h2>
+              <a class="button" href="/projects/" style={markerStyle('section:projects:all', 'var(--route-projects)')}>
+                All projects →
+              </a>
+            </div>
           </div>
-          <p class="section-intro">
-            Small generative sketches made in Processing and ported to p5.js. No brief, no
-            stakeholders, no deck.
-          </p>
-          <div class="grid grid--2">
-            {experiments.map((entry) => (
-              <ExperimentCard entry={entry} />
+          <div class="grid grid--2 scatter">
+            {projects.map((entry) => (
+              <ProjectCard entry={entry} />
             ))}
           </div>
         </div>
@@ -90,11 +102,18 @@ const experiments = (await getCollection('experiments'))
     posts.length > 0 && (
       <section class="section section--tight">
         <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">Writing</h2>
-            <a class="section-link" href="/blog/">All posts →</a>
+          <div
+            class="section-head-sheet sheet sheet--blog pin pin--corners"
+            style={`${writingPin}; --vt-name: ${vtWriting}; view-transition-class: vt vt-d3;`}
+          >
+            <div class="section-head">
+              <h2 class="section-title prop">Writing</h2>
+              <a class="button" href="/blog/" style={markerStyle('section:writing:all', 'var(--route-blog)')}>
+                All posts →
+              </a>
+            </div>
           </div>
-          <div class="post-list">
+          <div class="post-list scatter">
             {posts.map((entry) => (
               <PostCard entry={entry} />
             ))}
@@ -108,28 +127,8 @@ const experiments = (await getCollection('experiments'))
 <style>
   .hero {
     position: relative;
-    padding-block: var(--space-9) var(--space-7);
-    border-block-end: 2px solid var(--ink);
+    padding-block: var(--space-8) var(--space-8);
     overflow: hidden;
-  }
-
-  .hero-motif {
-    position: absolute;
-    top: 50%;
-    right: var(--gutter);
-    width: clamp(6rem, 18vw, 12rem);
-    height: clamp(6rem, 18vw, 12rem);
-    transform: translateY(-50%) rotate(12deg);
-    color: var(--accent-4);
-    opacity: 0.22;
-    pointer-events: none;
-  }
-
-  @media (max-width: 72rem) {
-    /* The motif only gets its own space on wide screens; below that it would sit on the headline. */
-    .hero-motif {
-      display: none;
-    }
   }
 
   .hero-inner {
@@ -137,55 +136,49 @@ const experiments = (await getCollection('experiments'))
     z-index: 1;
     display: grid;
     gap: var(--space-4);
-    max-width: 52rem;
+  }
+
+  .hero-sheet {
+    padding: var(--sheet-pad);
   }
 
   .hero-title {
     font-size: var(--text-4xl);
     max-width: 20ch;
-    margin-block-start: var(--space-2);
+    margin: 0;
   }
 
   .hero-lede {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
-    color: var(--text-muted);
+    color: var(--text);
     max-width: 56ch;
   }
 
   .hero-actions {
-    margin-block-start: var(--space-3);
+    margin-block-start: var(--space-6);
   }
+
+  /* The home page's calls to action run a size up from the site's small boxes. */
+  .hero-actions .button,
+  .section-head .button {
+    padding: 0.8em 1.5em;
+    font-size: var(--text-base);
+  }
+
 
   .section-title {
     font-size: var(--text-2xl);
-  }
-
-  .section-link {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    text-decoration: none;
-    white-space: nowrap;
-    font-weight: 600;
-  }
-
-  .section-link:hover {
+    margin: 0;
     color: var(--text);
-    text-decoration: underline;
-    text-decoration-color: var(--ink);
-    text-underline-offset: 0.25em;
-  }
-
-  .section-intro {
-    color: var(--text-muted);
-    font-size: var(--text-sm);
-    max-width: 60ch;
-    margin-block: calc(var(--space-3) * -1) var(--space-5);
+    /* No label padding: the title's type starts at the card's padding edge, level
+       with the button's frame on the far side. */
+    padding-inline: 0;
   }
 
   .grid {
     display: grid;
-    gap: var(--space-6) var(--space-5);
+    gap: var(--space-7) var(--space-6);
   }
 
   .grid--2 {
@@ -194,6 +187,6 @@ const experiments = (await getCollection('experiments'))
 
   .post-list {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
 </style>

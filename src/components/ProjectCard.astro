@@ -1,0 +1,90 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { hashTilt, tiltStyle, viewName } from '@/lib/tilt';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const { data, id } = entry;
+const tilt = tiltStyle(hashTilt(id));
+const vtName = viewName(Astro.url.pathname, `Project-${id}`);
+---
+
+<article class="Project">
+  <a
+    class="Project__link object pin lift"
+    href={`/projects/${id}/`}
+    style={`${tilt}; --vt-name: ${vtName};`}
+  >
+    <img
+      class="Project__poster"
+      src={data.poster}
+      alt=""
+      width="800"
+      height="600"
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="Project__body">
+      <div class="Project__meta">
+        <span>{data.year}</span>
+        <span aria-hidden="true">Â·</span>
+        <span>{data.tags.join(' / ')}</span>
+      </div>
+      <h3 class="Project__title">{data.title}</h3>
+      <p class="Project__summary">{data.description}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .Project__link {
+    display: grid;
+    gap: var(--space-5);
+    text-decoration: none;
+    /* The top margin is the pin's: the head sits in it, clear of the poster. */
+    padding: var(--pin-clearance) var(--space-5) var(--space-5);
+  }
+
+  .Project__poster {
+    /* Printed straight on the card's paper: no frame, and no movement of its
+       own â€” only the card lifts. */
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .Project__body {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .Project__meta {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .Project__title {
+    font-size: var(--text-base);
+    margin: 0;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .Project__link:hover .Project__title {
+    text-decoration: underline;
+    text-decoration-color: var(--ink);
+    text-underline-offset: 0.22em;
+  }
+
+  .Project__summary {
+    font-size: var(--text-sm);
+    color: var(--text);
+    margin: 0;
+  }
+</style>

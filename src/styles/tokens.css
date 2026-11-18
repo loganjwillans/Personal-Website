@@ -1,14 +1,14 @@
 /* ==========================================================================
-   Design tokens — the only file to edit when the real brand lands.
+   Design tokens — brutalist / Bauhaus re-skin.
    Every component references these variables, never raw colour or size.
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
-    'Helvetica Neue', sans-serif;
-  --font-display: 'Jost', var(--font-sans);
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-display: 'Space Grotesk', var(--font-sans);
   --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
     monospace;
 
@@ -21,12 +21,12 @@
   --text-3xl: clamp(2.1rem, 1.5rem + 2.8vw, 3.25rem);
   --text-4xl: clamp(2.6rem, 1.6rem + 4.6vw, 4.5rem);
 
-  --leading-tight: 1.12;
-  --leading-snug: 1.35;
-  --leading-body: 1.65;
+  --leading-tight: 1.08;
+  --leading-snug: 1.32;
+  --leading-body: 1.6;
 
-  --tracking-tight: -0.02em;
-  --tracking-wide: 0.14em;
+  --tracking-tight: -0.03em;
+  --tracking-wide: 0.18em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -43,168 +43,314 @@
   --wide: 78rem;
   --measure: 66ch;
 
-  --radius-sm: 6px;
-  --radius-md: 14px;
-  --radius-lg: 26px;
+  /* Brutalist radii: square, with a single 2px token for unavoidable tiny rounding. */
+  --radius-sharp: 0;
+  --radius-sm: 0;
+  --radius-md: 2px;
+  --radius-lg: 2px;
   --radius-full: 999px;
+  /* The two nav bars: a hint of a corner, not a pill. */
+  --nav-radius: 4px;
 
   --duration-1: 120ms;
   --duration-2: 220ms;
   --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
 
-  /* Palette — GMK Motif-inspired mid-century accents on warm paper. */
-  --cream: #F2ECDF;
-  --paper: #FBF7EE;
-  --cream-deep: #E7DFCE;
-  --ink: #191713;
-  --muted: #5C564A;
+  /* Bauhaus palette — transcribed from the user's colour strip. */
+  --charcoal: #2E2E2E;
+  --paper: #FFFFFF;
+  --offwhite: #FAF6F0;
+  --cream: #FBF2D6;
+  --blush: #F3E6E8;
+  --yellow: #EAE183;
+  --green: #8FC69B;
+  --blue: #5B9BD5;
+  --red: #DF5151;
 
-  --mustard: #E6AF27;
-  --teal: #17A07B;
-  --pink: #E4478B;
-  --vermilion: #ED6A2B;
-  --cobalt: #1B6FC7;
-  --gold: #C8953A;
+  /* Route colours, read off the logo: a section prints its head sheet in its
+     own, and the navbar marks the current section with the same one. Light
+     stock in both themes, so they are not changed for dark. */
+  --route-work: #60AFFF;
+  --route-projects: #80CFA9;
+  --route-blog: #FF595E;
+  --route-about: #FFEE8F;
+
+  /* The about yellow is light enough that a 30% tint of it under the nav reads
+     as nothing, so the bar marks About in a deeper gold of the same hue. The
+     card keeps the light one. */
+  --route-about-nav: #ECBE2E;
+
+  /* Legacy ink/muted aliases, kept so existing callers do not break. */
+  --ink: var(--charcoal);
+  --muted: #595959;
 
   /* Surfaces */
-  --bg: var(--cream);
+  --bg: var(--offwhite);
   --surface: var(--paper);
-  --surface-2: var(--cream-deep);
+  --surface-2: var(--cream);
 
   /* Text */
-  --text: var(--ink);
+  --text: var(--charcoal);
   --text-muted: var(--muted);
+  /* Labels on the glass chrome (header pill, tab bar), which is part-show-through:
+     a deeper muted ink than --text-muted, so the type still clears 4.5:1 over cork
+     and over dark imagery behind the glass. */
+  --glass-ink: #4A4A4A;
 
   /* Borders */
-  --border: var(--cream-deep);
-  --border-strong: var(--ink);
+  --border: #D9D6CF;
+  --border-strong: var(--charcoal);
 
-  /* Accents: mustard is the primary; teal / pink / vermilion take ink text; cobalt takes white. */
-  --accent: var(--mustard);
-  --accent-hover: #C99A1F;
-  --accent-contrast: var(--ink);
-  --accent-soft: #F5ECD3;
+  /* Accents — yellow is the primary action colour; charcoal text keeps it readable. */
+  --accent: var(--yellow);
+  --accent-hover: #E5D96F;
+  --accent-contrast: var(--charcoal);
+  --accent-soft: var(--blush);
 
-  --accent-2: var(--teal);
-  --accent-2-hover: #128A68;
-  --accent-2-contrast: var(--ink);
-  --accent-2-soft: #E0F5EE;
+  --accent-2: var(--green);
+  --accent-2-hover: #7EB68B;
+  --accent-2-contrast: var(--charcoal);
+  --accent-2-soft: #EAF5EC;
 
-  --accent-3: var(--pink);
-  --accent-3-hover: #D13A7A;
-  --accent-3-contrast: var(--ink);
-  --accent-3-soft: #FCE3ED;
+  --accent-3: var(--blue);
+  --accent-3-hover: #4A8BC4;
+  --accent-3-contrast: var(--charcoal);
+  --accent-3-soft: #E7F1FA;
 
-  --accent-4: var(--vermilion);
-  --accent-4-hover: #D85A1F;
-  --accent-4-contrast: var(--ink);
-  --accent-4-soft: #FDE8DF;
+  --accent-4: var(--red);
+  --accent-4-hover: #C94848;
+  --accent-4-contrast: var(--charcoal);
+  --accent-4-soft: #FCE8E8;
 
-  --accent-5: var(--cobalt);
-  --accent-5-hover: #155EAA;
-  --accent-5-contrast: var(--paper);
-  --accent-5-soft: #E3EEFB;
+  --accent-5: var(--blush);
+  --accent-5-hover: #EBD5D9;
+  --accent-5-contrast: var(--charcoal);
+  --accent-5-soft: #FAF3F4;
 
-  /* Text-safe accents — the bright fills fail AA as small text on paper. */
-  --accent-text: #8a6200;
-  --accent-2-text: #0e7a5c;
+  /* Text-safe accents for small inline links on paper. */
+  --accent-text: #3B76A8;
+  --accent-2-text: #4A7F56;
 
-  --focus: var(--accent-5);
-  /* Text-safe vermilion: --accent-4 is a fill colour and too light for small text on cream. */
-  --danger: #b04a1c;
+  --focus: var(--blue);
+  --danger: #C73E3E;
 
-  /* Media overlay — deliberately theme-independent so the scrim stays dark in both themes. */
+  /* Media overlay — deliberately theme-independent. */
   --scrim: #0b0a08;
   --on-scrim: #f4eee1;
 
-  /* Hard printed offset shadows — no blur. */
-  --shadow-ink: #191713;
-  --shadow-key: 4px 4px 0 var(--shadow-ink);
+  /* Hard, unblurred offset shadows. */
+  --shadow-ink: var(--charcoal);
+  --shadow-key: 3px 3px 0 var(--shadow-ink);
   --shadow-key-sm: 2px 2px 0 var(--shadow-ink);
   --shadow-sm: var(--shadow-key-sm);
   --shadow-md: var(--shadow-key);
 
-  /* Subtle scattered speckle. Use with background-image; pair with --speckle-size. */
-  --speckle:
-    radial-gradient(circle at 34px 42px, #19171308 0 1px, transparent 1px),
-    radial-gradient(circle at 112px 78px, #19171305 0 1.5px, transparent 1.5px),
-    radial-gradient(circle at 76px 132px, #19171307 0 1px, transparent 1px),
-    radial-gradient(circle at 14px 124px, #19171304 0 2px, transparent 2px),
-    radial-gradient(circle at 142px 28px, #19171306 0 1px, transparent 1px);
-  --speckle-size: 160px 160px;
+  /* Cork board — the surface itself is public/cork.svg, a seamless vector tile. */
+  --cork: #C79C67;
+
+  /* Paper grain — public/paper.jpg, a seamless 320×320 tile of soft white stock.
+     It multiplies into the sheet's own colour, so white gains tooth, a coloured
+     head sheet stays its colour, and the ink keeps today's contrast. Repeats at
+     the tile's natural size: never stretched across a card. */
+  --paper-texture: url('/paper-bright.jpg');
+  --paper-texture-size: 2120px auto;
+  --paper-texture-blend: multiply;
+
+  /* Layered desk surface and depth (kept for components still using it). */
+  --shadow-desk-sm: 0 1px 1px rgba(46, 46, 46, 0.10), 0 2px 6px rgba(46, 46, 46, 0.08);
+  --shadow-desk: 0 2px 2px rgba(46, 46, 46, 0.08), 0 10px 24px rgba(46, 46, 46, 0.12);
+  --shadow-desk-lg: 0 4px 4px rgba(46, 46, 46, 0.08), 0 20px 44px rgba(46, 46, 46, 0.16);
+  --paper-edge: rgba(46, 46, 46, 0.10);
+  --sheet: #FFFFFF;
+  /* Never less than the room a pin needs before the paper's first line. */
+  --sheet-pad: clamp(var(--pin-clearance), 4vw, 3.25rem);
+  --highlight: rgba(255, 255, 255, 0.7);
+
+  /* Deep red for the 404 head: #DF5151 holds neither ink nor white at 4.5:1,
+     so the sheet colour is mixed down and prints in offwhite. */
+  --sheet-red: color-mix(in srgb, var(--red) 65%, var(--charcoal));
+
+  /* Pinned-paper shadow that reads on cork. */
+  --shadow-pin: 0 2px 3px rgba(46, 46, 46, 0.18), 0 8px 20px rgba(46, 46, 46, 0.14);
+
+  /* Pins — decorative fasteners drawn by the shared .pin rule in global.css.
+     Sized like real ones: a tack head is 8–10mm, a pushpin a little larger.
+     Two kinds: a flat steel tack, or a domed plastic pushpin. pinStyle() in
+     src/lib/tilt.ts picks --pin-size, --pin-head, --pin-ring and --pin-shadow
+     (plus a --pin-b-* set for the second corner pin).
+     The pins sit on the paper, not on its edge: inset down from the top and in
+     from the corners. --pin-clearance is how far a pin reaches below that top
+     edge — sheet padding never goes below it, and pinned cards start their
+     print below it, so a head never lands on the text or the media. */
+  --pin-inset: 0.9rem;
+  --pin-inset-side: 1.5rem;
+  --pin-size: 1.1rem; /* fallback when an element has no generated pin style */
+  --pin-size-tack: 1.1rem;
+  --pin-size-pushpin: 1.45rem;
+  --pin-clearance: calc(var(--pin-inset) + var(--pin-size-pushpin) + 0.3rem);
+  --pin-rim: rgba(46, 46, 46, 0.22); /* ring around the metal tack */
+  --pin-metal: #A8A29E;
+  --pin-metal-light: #E7E5E4;
+  --pin-metal-dark: #78716C;
+  --pin-highlight: rgba(255, 255, 255, 0.62);
+  --pin-red: var(--red);
+  --pin-red-dark: #B83E3E;
+  --pin-blue: var(--blue);
+  --pin-blue-dark: #3D7AB0;
+  --pin-green: var(--green);
+  --pin-green-dark: #6EA87A;
+  --pin-yellow: var(--yellow);
+  --pin-yellow-dark: #C9BC5E;
+  /* A tack is pressed almost flat: a tight contact shadow and a thin halo. */
+  --pin-shadow-tack: 0 1px 2px rgba(46, 46, 46, 0.42), 0 2px 5px rgba(46, 46, 46, 0.2);
+  /* A pushpin stands proud: a soft shadow falling to the lower right. */
+  --pin-shadow-pushpin: 1px 2px 4px rgba(46, 46, 46, 0.3), 2px 6px 12px rgba(46, 46, 46, 0.16);
+
+  /* Surface treatments — two kinds of thing only.
+     A sheet (.sheet, .object) sits on the cork: paper, pencil shadow, pinned.
+     No border anywhere; the shadow alone is its edge.
+     Anything printed on a sheet (props, tags, buttons, code, images) is flat:
+     colour is ink, but nothing casts a shadow or draws a frame. */
+  --panel-radius: var(--radius-sharp);
+  --panel-shadow: var(--shadow-pin);
+  --prop-pad: 0.45em 0.85em;
+
+  /* Highlighter swipe behind a button label. markerStyle() (src/lib/tilt.ts)
+     picks one of these per button, or pins an explicit colour; each is a palette
+     colour let down with paper so the ink label keeps its contrast on paper, on
+     a coloured head sheet and in dark mode. */
+  --marker-yellow: color-mix(in srgb, var(--yellow) 65%, var(--paper));
+  --marker-blue: color-mix(in srgb, var(--blue) 65%, var(--paper));
+  --marker-green: color-mix(in srgb, var(--green) 65%, var(--paper));
+  --marker-red: color-mix(in srgb, var(--red) 65%, var(--paper));
+  --marker-blush: color-mix(in srgb, var(--blush) 65%, var(--paper));
+  --marker: var(--marker-yellow);
+
+  /* Spacing rhythm for panels and the content that follows them. */
+  --panel-gap: var(--space-4);
+  --panel-stack: var(--space-6);
+
+  /* Tiny believable tilts — hand-placed, uneven values so consecutive items
+     read as random rather than as a scale. Use inline `style="--tilt: var(--tilt-N);"`
+     for authored per-item tilt; .scatter provides a fallback only. */
+  --tilt-1: -0.55deg;
+  --tilt-2: 0.72deg;
+  --tilt-3: -0.38deg;
+  --tilt-4: 0.48deg;
+  --tilt-5: -0.66deg;
+  --tilt-6: 0.28deg;
+  --tilt-7: -0.42deg;
+  --tilt-8: 0.62deg;
+  --tilt-9: -0.22deg;
+
+  /* Speckle token is retired, but kept as a no-op so callers do not break. */
+  --speckle: none;
+  --speckle-size: 0;
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
 
-  /* Palette — brightened accents on a near-black ground. */
-  --ink: #F4EEE1;
+  /* Brightened accents on a near-black charcoal ground. */
+  --yellow: #F0E68C;
+  --green: #9DD6A8;
+  --blue: #6CABE8;
+  --red: #EF5E5E;
+  --blush: #F8E4E7;
+  --cream: #FBF2D6;
+  --offwhite: #FAF6F0;
 
-  --mustard: #F0BE3E;
-  --teal: #2FBE93;
-  --pink: #F2609E;
-  --vermilion: #F58445;
-  --cobalt: #4E9BE8;
-  --gold: #D6A64A;
+  --ink: var(--offwhite);
+  --muted: #A8A39A;
 
   /* Surfaces */
-  --bg: #141311;
-  --surface: #1D1C19;
-  --surface-2: #262521;
+  --bg: #242424;
+  --surface: var(--charcoal);
+  --surface-2: #3A3A3A;
 
   /* Text */
-  --text: #F4EEE1;
-  --text-muted: #ADA493;
+  --text: var(--offwhite);
+  --text-muted: var(--muted);
+  /* Offwhite ink on a dark glass: --muted already clears 4.5:1 here. */
+  --glass-ink: var(--muted);
 
   /* Borders */
-  --border: #35332D;
-  --border-strong: var(--ink);
+  --border: #4A4A4A;
+  --border-strong: var(--offwhite);
 
   /* Accents */
-  --accent: var(--mustard);
-  --accent-hover: #F5CD60;
-  --accent-contrast: #141311;
-  --accent-soft: #3A3321;
+  --accent: var(--yellow);
+  --accent-hover: #F5EC9E;
+  --accent-contrast: var(--charcoal);
+  --accent-soft: #3A3026;
 
-  --accent-2: var(--teal);
-  --accent-2-hover: #4DD4AB;
-  --accent-2-contrast: #141311;
-  --accent-2-soft: #1E2F28;
+  --accent-2: var(--green);
+  --accent-2-hover: #85C493;
+  --accent-2-contrast: var(--charcoal);
+  --accent-2-soft: #28382C;
 
-  --accent-3: var(--pink);
-  --accent-3-hover: #F57EB2;
-  --accent-3-contrast: #141311;
-  --accent-3-soft: #3A212C;
+  --accent-3: var(--blue);
+  --accent-3-hover: #5C9FE8;
+  --accent-3-contrast: var(--charcoal);
+  --accent-3-soft: #263340;
 
-  --accent-4: var(--vermilion);
-  --accent-4-hover: #F79B65;
-  --accent-4-contrast: #141311;
-  --accent-4-soft: #3D2720;
+  --accent-4: var(--red);
+  --accent-4-hover: #F56F6F;
+  --accent-4-contrast: var(--charcoal);
+  --accent-4-soft: #3E2A2A;
 
-  --accent-5: var(--cobalt);
-  --accent-5-hover: #7AB5F0;
-  --accent-5-contrast: #141311;
-  --accent-5-soft: #1E293A;
+  --accent-5: var(--blush);
+  --accent-5-hover: #FFF0F3;
+  --accent-5-contrast: var(--charcoal);
+  --accent-5-soft: #3A2E30;
 
-  /* Text-safe accents — the bright fills read as text on the dark ground. */
-  --accent-text: #f0be3e;
-  --accent-2-text: #2fbe93;
+  --accent-text: #8FC9F8;
+  --accent-2-text: #8AD99A;
 
-  --focus: var(--accent-5);
-  --danger: var(--accent-4);
+  --focus: var(--blue);
+  --danger: var(--red);
 
-  /* Gold flecks carry the offset shadow on the dark ground, like the black caps. */
-  --shadow-ink: #d6a64a40;
-  --shadow-key: 4px 4px 0 var(--shadow-ink);
+  /* Warm offset shadow on dark ground. */
+  --shadow-ink: #FAF6F033;
+  --shadow-key: 3px 3px 0 var(--shadow-ink);
   --shadow-key-sm: 2px 2px 0 var(--shadow-ink);
   --shadow-sm: var(--shadow-key-sm);
   --shadow-md: var(--shadow-key);
 
-  /* Gold flecks on dark ground. */
-  --speckle:
-    radial-gradient(circle at 34px 42px, #D6A64A0C 0 1px, transparent 1px),
-    radial-gradient(circle at 112px 78px, #D6A64A08 0 1.5px, transparent 1.5px),
-    radial-gradient(circle at 76px 132px, #D6A64A0A 0 1px, transparent 1px),
-    radial-gradient(circle at 14px 124px, #D6A64A06 0 2px, transparent 2px),
-    radial-gradient(circle at 142px 28px, #D6A64A09 0 1px, transparent 1px);
+  /* Cork board — the same vector tile, darkened by the theme's body wash. */
+  --cork: #2A211B;
+
+  /* Paper grain on dark sheets: the same white tile, multiplied into the
+     charcoal so it darkens the fibre only. The sheet keeps its tone (dark paper,
+     not a flat panel) and offwhite ink keeps its contrast. */
+  --paper-texture: url('/paper.jpg');
+  --paper-texture-blend: multiply;
+
+  /* Layered desk surface and depth (kept for components still using it). */
+  --shadow-desk-sm: 0 1px 1px rgba(11, 10, 8, 0.40), 0 2px 6px rgba(11, 10, 8, 0.50);
+  --shadow-desk: 0 2px 2px rgba(11, 10, 8, 0.35), 0 10px 24px rgba(11, 10, 8, 0.45);
+  --shadow-desk-lg: 0 4px 4px rgba(11, 10, 8, 0.30), 0 20px 44px rgba(11, 10, 8, 0.55);
+  --paper-edge: rgba(250, 246, 240, 0.10);
+  --sheet: #333333;
+  --highlight: rgba(250, 246, 240, 0.10);
+
+  /* Pinned-paper shadow that reads on dark cork: a dark board swallows a soft
+     shadow, so the contact shadow is a little tighter here. */
+  --shadow-pin: 0 3px 4px rgba(6, 5, 4, 0.55), 0 10px 26px rgba(6, 5, 4, 0.6);
+
+  /* Pins — lighter rim and metal so they still read on dark sheets. */
+  --pin-rim: rgba(250, 246, 240, 0.28);
+  --pin-metal: #D6D3D1;
+  --pin-metal-light: #FAFAF9;
+  --pin-metal-dark: #A8A29E;
+  --pin-highlight: rgba(255, 255, 255, 0.52);
+  --pin-red-dark: #C94A4A;
+  --pin-blue-dark: #4A8BC4;
+  --pin-green-dark: #7EB68B;
+  --pin-yellow-dark: #D6C965;
+  --pin-shadow-tack: 0 1px 2px rgba(11, 10, 8, 0.62), 0 2px 5px rgba(11, 10, 8, 0.42);
+  --pin-shadow-pushpin: 1px 2px 4px rgba(11, 10, 8, 0.52), 2px 6px 12px rgba(11, 10, 8, 0.36);
+
+  --speckle: none;
+  --speckle-size: 0;
 }

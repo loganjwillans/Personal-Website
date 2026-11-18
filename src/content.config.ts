@@ -43,14 +43,14 @@ const blog = defineCollection({
   }),
 });
 
-const experiments = defineCollection({
-  loader: glob({ base: './src/content/experiments', pattern: '**/*.{md,mdx}' }),
+const projects = defineCollection({
+  loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     year: z.number().int(),
     tags: z.array(z.string()).default([]),
-    /** Folder under /public/experiments that holds index.html + sketch.js */
+    /** Folder under /public/projects that holds index.html + sketch.js */
     sketch: z.string(),
     poster: z.string(),
     source: z.string().optional(),
@@ -58,4 +58,4 @@ const experiments = defineCollection({
   }),
 });
 
-export const collections = { work, blog, experiments };
+export const collections = { work, blog, projects };

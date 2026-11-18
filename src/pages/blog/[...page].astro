@@ -1,0 +1,341 @@
+---
+import type { GetStaticPathsOptions, Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
+
+interface Props {
+  page: Page<CollectionEntry<'blog'>>;
+  tags: string[];
+}
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
+  return paginate(posts, { pageSize: 10, props: { tags } });
+}
+
+const { page, tags } = Astro.props;
+const posts = page.data;
+
+const pageTilt = tiltStyle(hashTilt('blog-index'));
+const filterTilt = tiltStyle(hashTilt('blog-filter'));
+const vtHead = viewName(Astro.url.pathname, 'head');
+const vtFilter = viewName(Astro.url.pathname, 'filter');
+const vtPager = viewName(Astro.url.pathname, 'pager');
+---
+
+<BaseLayout
+  title="Blog"
+  description="Field notes on product design, design systems, and the tools I use to make things."
+>
+  <section class="page-head">
+    <div class="container">
+      <div
+        class="page-head-sheet sheet sheet--blog stack tilt pin pin--corners"
+        style={`${pageTilt} --stack-gap: var(--space-4); --vt-name: ${vtHead};`}
+      >
+        <p class="eyebrow">Writing</p>
+        <h1 class="page-title">Field notes</h1>
+        <p class="page-lede">
+          Occasional writing about design work: what held up, what didn't, and the parts of the job
+          that don't fit in a case study.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div
+        class="section-head-sheet sheet pin pin--corners"
+        style={`${filterTilt}; --vt-name: ${vtFilter}; view-transition-class: vt vt-d1;`}
+      >
+        <div class="search">
+          <label class="visually-hidden" for="blog-search">Search blog posts</label>
+          <input
+            id="blog-search"
+            class="search-input"
+            type="search"
+            placeholder="Search by title, summary, or tag…"
+            aria-label="Search blog posts"
+            autocomplete="off"
+            aria-describedby="blog-results"
+          />
+        </div>
+        {
+          tags.length > 0 && (
+            <ul role="list" class="tag-list">
+              {tags.map((tag) => (
+                <li>
+                  <button
+                    type="button"
+                    class="tag button tag-filter"
+                    data-tag={tag}
+                    aria-pressed="false"
+                    style={markerStyle(`blog:tag:${tag}`)}
+                  >
+                    {tag}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      {
+        posts.length === 0 ? (
+          <p class="empty text-muted prop">Nothing published yet.</p>
+        ) : (
+          <div class="post-list scatter" id="blog-posts">
+            {posts.map((entry) => (
+              <PostCard entry={entry} />
+            ))}
+          </div>
+        )
+      }
+
+      <p class="empty text-muted prop" id="blog-empty" hidden>No posts match your search.</p>
+
+      <div
+        class="pager-card sheet pin pin--corners"
+        style={`--vt-name: ${vtPager}; view-transition-class: vt vt-d4;`}
+      >
+        <p
+          id="blog-results"
+          class="result-count text-muted"
+          role="status"
+          aria-live="polite"
+          data-total={page.total}
+        >
+          Showing {posts.length} of {page.total} posts.
+        </p>
+        {
+          page.lastPage > 1 && (
+            <nav class="pager" aria-label="Blog pages">
+              {page.url.prev ? (
+                <a
+                  class="button"
+                  href={page.url.prev}
+                  style={markerStyle(`blog:page:${page.currentPage}:prev`)}
+                >
+                  ← Previous
+                </a>
+              ) : (
+                <span aria-hidden="true"></span>
+              )}
+              <span class="pager__status text-muted prop">Page {page.currentPage} of {page.lastPage}</span>
+              {page.url.next ? (
+                <a
+                  class="button"
+                  href={page.url.next}
+                  style={markerStyle(`blog:page:${page.currentPage}:next`)}
+                >
+                  Next →
+                </a>
+              ) : (
+                <span aria-hidden="true"></span>
+              )}
+            </nav>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#blog-search');
+  const list = document.querySelector<HTMLElement>('#blog-posts');
+  const count = document.querySelector<HTMLElement>('#blog-results');
+  const empty = document.querySelector<HTMLElement>('#blog-empty');
+
+  const tagButtons = [...document.querySelectorAll<HTMLButtonElement>('.tag-filter')];
+
+  if (input && list && count && empty) {
+    const rows = [...list.querySelectorAll<HTMLElement>('.post-row')].map((row) => ({
+      el: row,
+      text: [
+        row.querySelector('.post-row__title')?.textContent,
+        row.querySelector('.post-row__summary')?.textContent,
+        row.querySelector('.post-row__meta')?.textContent,
+        row.dataset.tags,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase(),
+      tags: (row.dataset.tags || '').split('|').filter(Boolean),
+    }));
+    const total = Number(count.dataset.total);
+    let activeTag = '';
+
+    const label = () => {
+      const parts = [];
+      const query = input.value.trim();
+      if (query) parts.push(`“${query}”`);
+      if (activeTag) parts.push(`tag ${activeTag}`);
+      return parts.join(' + ');
+    };
+
+    const apply = () => {
+      const needle = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const { el, text, tags } of rows) {
+        const show = (!needle || text.includes(needle)) && (!activeTag || tags.includes(activeTag));
+        el.hidden = !show;
+        if (show) visible += 1;
+      }
+      const filter = label();
+      count.textContent = filter
+        ? `${visible} of ${rows.length} posts on this page match ${filter}`
+        : `Showing ${rows.length} of ${total} posts.`;
+      empty.hidden = visible !== 0;
+      empty.textContent = `No posts match ${filter}.`;
+    };
+
+    input.addEventListener('input', apply);
+    for (const button of tagButtons) {
+      button.addEventListener('click', () => {
+        const tag = button.dataset.tag || '';
+        activeTag = activeTag === tag ? '' : tag;
+        for (const other of tagButtons) {
+          const pressed = other.dataset.tag === activeTag;
+          other.setAttribute('aria-pressed', String(pressed));
+          other.classList.toggle('is-active', pressed);
+        }
+        apply();
+      });
+    }
+  }
+</script>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin: 0;
+  }
+
+  .page-lede {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--text);
+    max-width: 56ch;
+  }
+
+  .page-head-sheet {
+    padding: var(--sheet-pad);
+  }
+
+  .search {
+    display: grid;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.7em 1.15em;
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-sharp);
+    background: transparent;
+    font-size: var(--text-sm);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search-input:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tag-filter {
+    /* A bordered button like the rest of the site, but pill-shaped. */
+    border-radius: var(--radius-full);
+    background: transparent;
+    padding: 0.5em 1em;
+    font-size: var(--text-sm);
+  }
+
+  /* A selected filter keeps the highlighter stroke laid down. */
+  .tag-filter[aria-pressed='true'] {
+    color: var(--accent-contrast);
+  }
+
+  .tag-filter[aria-pressed='true']::before {
+    opacity: 1;
+    mask-position: 40% 0;
+  }
+
+  .pager-card {
+    view-transition-name: var(--vt-name);
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--sheet-pad);
+    margin-block-start: var(--space-6);
+  }
+
+  .result-count {
+    /* A meta line like the ones on post cards: display face, small, tracked out. */
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .post-list {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  /* The row's own display rule would beat the hidden attribute's UA rule. */
+  :global(.post-row)[hidden] {
+    display: none !important;
+  }
+
+  .empty {
+    margin: 0;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block-start: var(--space-6);
+  }
+
+  .pager__status {
+    text-align: center;
+  }
+
+  @media (max-width: 30rem) {
+    .pager {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .pager__status {
+      grid-row: 1;
+      grid-column: 1 / -1;
+    }
+  }
+</style>
