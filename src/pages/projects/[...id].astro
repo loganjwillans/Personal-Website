@@ -2,7 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import P5Canvas from '@/components/P5Canvas.astro';
-import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
+import * as components from '@/components/content';
+import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -16,7 +17,6 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { data, id } = entry;
 const headTilt = tiltStyle(hashTilt(id));
-const bodyPin = pinStyle(hashTilt(`${id}-body`));
 const vtHead = viewName(Astro.url.pathname, 'head');
 const vtBody = viewName(Astro.url.pathname, 'body');
 ---
@@ -35,6 +35,8 @@ const vtBody = viewName(Astro.url.pathname, 'body');
           <h1 class="Project-title">{data.title}</h1>
           <p class="Project-lede">{data.description}</p>
           <div class="Project-meta">
+            <span>{data.kind}</span>
+            <span aria-hidden="true">·</span>
             <span>{data.year}</span>
             {
               data.tags.length > 0 && (
@@ -50,25 +52,16 @@ const vtBody = viewName(Astro.url.pathname, 'body');
     </header>
 
     <div class="container container--narrow">
-      <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
-        <P5Canvas src={data.sketch} poster={data.poster} title={data.title} />
-
-        <Content />
-
+      <div class="prose" style={`--vt-name: ${vtBody};`}>
         {
-          data.source && (
-            <p class="Project-source">
-              <a
-                class="button"
-                href={data.source}
-                rel="noopener"
-                style={markerStyle(`project:${id}:source`)}
-              >
-                Read the source
-              </a>
-            </p>
-          )
+          data.sketch && data.poster ? (
+            <P5Canvas src={data.sketch} poster={data.poster} title={data.title} />
+          ) : data.poster ? (
+            <img class="Project-cover" src={data.poster} alt="" width="1200" height="750" />
+          ) : null
         }
+
+        <Content components={components} />
       </div>
     </div>
   </article>
@@ -88,11 +81,17 @@ const vtBody = viewName(Astro.url.pathname, 'body');
     max-width: 24ch;
   }
 
+  /* Match the blog post hero: room under the back button, then the same gap
+     from the headline to the description. */
+  .stack > .Project-title {
+    margin-block-start: var(--space-6);
+  }
+
   .Project-lede {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
     color: var(--text);
-    margin-block-start: var(--space-3);
+    margin-block-start: var(--space-4);
     max-width: 54ch;
   }
 
@@ -106,12 +105,15 @@ const vtBody = viewName(Astro.url.pathname, 'body');
     letter-spacing: var(--tracking-wide);
   }
 
-  .Project-head-sheet,
-  .prose.sheet {
+  .Project-head-sheet {
     padding: var(--sheet-pad);
   }
 
-  .Project-source {
-    margin-block-start: var(--space-6);
+  .Project-cover {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    margin-block-end: var(--space-5);
   }
 </style>

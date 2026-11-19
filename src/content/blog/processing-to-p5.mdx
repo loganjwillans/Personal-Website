@@ -3,36 +3,51 @@ title: Sketching with Processing, then shipping with p5
 description: Why I keep writing sketches in Processing even though the output has to run in a browser, and the small workflow that makes the port painless.
 pubDate: 2026-08-02
 tags:
-  - projects
+  - Projects
   - p5.js
   - Tools
 ---
 
-I write small generative programs almost every week. Most never leave my machine. Some end up in the [projects](/projects/) section, which means they have to run in a browser, which means they can't stay in Processing's Java mode.
+I write small generative programs most weeks. Most never leave my machine. Some are worth sharing,
+which means they have to run in a browser and cannot stay in Processing's Java mode.
 
-The obvious move is to write them in p5.js from the start. I've tried that. I keep going back to Processing first.
+The obvious move is to write them in p5.js from the start. I have tried that. I keep going back to
+Processing first.
 
-## Why start in Processing
+<Card title="Why start in Processing" label="The editor" color="blue">
 
-Processing's editor is a place to think, not a place to ship. There's no module system, no build step, and no expectation that the sketch will be maintained. That constraint is the point: I can have an idea at 9pm and see it move by 9:10.
+Processing's editor is a place to think, not a place to ship. There is no module system, no build
+step, and no expectation that the sketch will be maintained. That constraint is the point: an idea
+at 9pm can be moving by 9:10.
 
-It also has a genuinely better debugging loop for visual work. `println` and a visible frame rate go a long way. The sketch either looks right or it doesn't â€” there's no test to write and no stakeholder to brief.
+It also has a better debugging loop for visual work. `println` and a visible frame rate go a long
+way. p5.js is the same API with a different runtime, but the surrounding context changes how I work:
+once I am in a project folder with a bundler, I start thinking about structure, and the sketch stops
+being a sketch.
 
-p5.js is the same API with a different runtime, but the surrounding context changes how I work. Once I'm in a project folder with a bundler, I start thinking about structure, and the sketch stops being a sketch.
+</Card>
 
-## The port is mostly mechanical
+The port is mostly mechanical. The API overlap is close enough that most sketches take a few
+minutes to move.
 
-The API overlap is close enough that most of my sketches port in a few minutes. The changes that actually matter:
+<LooseCard title="The differences that matter" color="cream">
 
 - `size()` becomes `createCanvas()`, and it goes inside `setup()`.
-- `colorMode(HSB)` works the same, but hex strings and `color()` behave slightly differently at the edges.
-- Anything reading from the filesystem â€” fonts, images, CSV â€” needs a web path and an `loadFont` / `loadImage` callback.
-- `noise()` is the same, but the seed handling is not. Reset it explicitly before capturing a poster frame.
+- `colorMode(HSB)` works the same, but hex strings and `color()` behave slightly differently at the
+  edges.
+- Anything reading from the filesystem — fonts, images, CSV — needs a web path and a `loadFont` or
+  `loadImage` callback.
+- `noise()` is the same, but seed handling is not. Reset it explicitly before capturing a poster
+  frame.
 
-Here's the core loop of the flow field Project, which is unchanged between the two versions:
+</LooseCard>
 
-```js
-function draw() {
+Here is the core loop of a flow field, unchanged between the two versions:
+
+<CodeBlock
+  title="flow-field.js"
+  language="js"
+  code={`function draw() {
   for (const p of particles) {
     const angle = noise(p.x * scale, p.y * scale, zoff) * TWO_PI * 2;
     p.prev.set(p.x, p.y);
@@ -45,23 +60,37 @@ function draw() {
     if (p.offscreen()) p.reset();
   }
   zoff += 0.0008;
-}
-```
+}`}
+/>
 
-That's it. The visual character comes from three numbers â€” noise scale, particle count, and trail alpha â€” and they behave identically in both runtimes.
+That is it. The visual character comes from three numbers — noise scale, particle count, and trail
+alpha — and they behave identically in both runtimes.
 
-## What doesn't port
+<MetricGrid
+  items={[
+    { value: '~5', label: 'API differences', note: 'per sketch' },
+    { value: '9:10', label: 'from idea to movement', note: 'in Processing' },
+    { value: '1', label: 'poster frame', note: 'captured before the port' }
+  ]}
+/>
 
-Anything that depends on the desktop runtime: high frame rates on large canvases, native file dialogs, video export at quality. For those, I export a video from Processing and leave the sketch where it was made.
+<Callout label="What does not port" title="Patience, mostly" tone="yellow" foot="A browser sketch has an audience.">
 
-The other thing that doesn't port is patience. A browser sketch has an audience, which means it needs a play button, a pause, and a way to stop eating battery on a laptop. The [P5Canvas wrapper](/projects/) on this site does that by keeping the canvas out of the page until someone asks for it â€” a requirement Processing never imposed.
+Anything tied to the desktop runtime — high frame rates on large canvases, native file dialogs,
+quality video export — stays in Processing. A browser sketch also needs a play button, a pause, and
+a way to stop eating battery on a laptop. That is a requirement the desktop editor never imposed.
 
-## The workflow, briefly
+</Callout>
 
-1. Write and iterate in Processing until the movement is right.
-2. Copy `setup()` and `draw()` into a p5 sketch.
-3. Fix the five or six API differences.
-4. Capture a poster frame, so the page has something to show before it runs.
-5. Stop worrying about it and start the next one.
+<Quote>
 
-The whole thing takes an evening for something small. That's the correct budget for an Project.
+The whole thing takes an evening for something small. That is the correct budget for a sketch.
+
+</Quote>
+
+<EntryFooter href="/blog/" label="Read more posts">
+  <p>
+    Written by Logan Willans. Replies and corrections are welcome at
+    <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a>.
+  </p>
+</EntryFooter>

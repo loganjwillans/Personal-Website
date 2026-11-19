@@ -1,0 +1,68 @@
+---
+title: Contract Toolkit
+description: A small offline script that turns a recurring review into a checklist instead of a memory test.
+year: 2026
+tags:
+  - Code
+  - Tooling
+kind: Code
+order: 4
+---
+
+A colleague kept a spreadsheet of clause patterns she had seen before. It worked well, but only for
+her, and it grew slower every month. The toolkit is that spreadsheet turned into one command: it
+reads a document, flags the patterns and prints a short checklist.
+
+<Card title="Design constraints" label="Scope" color="blue">
+
+- It runs offline. The documents are confidential and should never leave the machine.
+- It prints a checklist, not a score. A score invites argument; a checklist invites action.
+- It stays boring. Nothing in the output should surprise the person reading it.
+
+</Card>
+
+The first version tried to classify clauses by type. That was clever and wrong. Reviewers did not
+want a taxonomy — they wanted to know what to check next. The current version prints three columns:
+what it found, where, and what to confirm.
+
+<CodeBlock
+  title="terminal"
+  language="bash"
+  code={`$ toolkit check agreement.pdf
+
+11 patterns loaded
+  42  indemnity cap            check against playbook §4
+ 118  auto-renewal             confirm notice period
+ 203  governing law            confirm jurisdiction
+
+3 items to review · 2s`}
+/>
+
+<MetricGrid
+  items={[
+    { value: '11', label: 'patterns covered', note: 'from the original spreadsheet' },
+    { value: '2s', label: 'per document', note: 'on a laptop, offline' },
+    { value: '0', label: 'accounts required', note: 'by design' }
+  ]}
+/>
+
+<LooseCard title="The deliberate limit" color="cream">
+
+The toolkit does not learn. Every pattern is added by hand, which is slower but makes the output
+predictable. For a review aid, predictability is worth more than cleverness — somebody has to trust
+the checklist enough to use it under time pressure.
+
+</LooseCard>
+
+<Callout label="Next" title="Where it goes from here" tone="green" foot="Only if the checklist earns its place.">
+
+The interesting question is not which patterns to add next. It is whether reviewers change what
+they check when the list is in front of them. That needs observation, not another feature.
+
+</Callout>
+
+<Quote>
+
+Design the output for the moment someone is tired, not the moment they are curious.
+
+</Quote>

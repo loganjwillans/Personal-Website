@@ -198,7 +198,12 @@ const names = Array.from({ length: 5 }, (_, index) =>
         ? contentLeft + inset - STICKER_SIZE + jitter
         : contentRight - inset + jitter;
       const x = Math.max(8, Math.min(rawX, document.documentElement.clientWidth - STICKER_SIZE - 8));
-      makeSticker(x, y, shuffled[index % shuffled.length], board.transitionNames[index], index);
+      // Scope the name to the page at creation time: the inline script re-runs
+      // at unpredictable points during a router swap, so a cached name from the
+      // previous page can otherwise linger on the new one.
+      const slug =
+        location.pathname.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'home';
+      makeSticker(x, y, shuffled[index % shuffled.length], `vt-${slug}-sticker-${index + 1}`, index);
     }
   }
 
@@ -213,21 +218,34 @@ const names = Array.from({ length: 5 }, (_, index) =>
     addSticker(x, y, src);
   }
 
-  if (!board.pageLoadWired) {
-    board.pageLoadWired = true;
-    document.addEventListener('astro:page-load', () => {
-      // Nothing carries over: the old set peels with the cards and this page's
-      // five are pinned using the names refreshed at the top of each script run.
-      document.querySelectorAll('[data-sticker]').forEach((element) => element.remove());
-      board.placed = [];
-      const button = trigger();
-      if (button && !button.dataset.stickerWired) {
-        button.dataset.stickerWired = 'true';
-        button.addEventListener('click', onTriggerClick);
-      }
-      seedStickers();
-      syncTrigger();
-    });
+  function repin() {
+    // Nothing carries over: the old set peels with the cards and this page's
+    // five are pinned using the names refreshed at the top of each script run.
+    document.querySelectorAll('[data-sticker]').forEach((element) => element.remove());
+    board.placed = [];
+    const button = trigger();
+    if (button && !button.dataset.stickerWired) {
+      button.dataset.stickerWired = 'true';
+      button.addEventListener('click', onTriggerClick);
+    }
+    seedStickers();
+    syncTrigger();
+  }
+
+  // On a cold load astro:page-load can be a few hundred ms away, so a quick
+  // first click would navigate with no stickers on the board to peel. Seed as
+  // soon as this script runs.
+  if (!board.initialSeed) {
+    board.initialSeed = true;
+    repin();
+  }
+
+  // A router swap must seed inside the view transition's DOM update, before the
+  // new snapshot is captured — otherwise the new stickers are added at
+  // page-load, after the transition, and simply pop in instead of pinning.
+  if (!board.afterSwapWired) {
+    board.afterSwapWired = true;
+    document.addEventListener('astro:after-swap', repin);
   }
 </script>
 

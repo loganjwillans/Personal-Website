@@ -8,14 +8,14 @@ export const site = {
   name: 'Logan Willans',
   role: 'Product Designer',
   employer: 'IntelAgree',
-  title: 'Logan Willans â€” Product Designer',
+  title: 'Logan Willans — Product Designer',
   description:
     'Logan Willans is a product designer at IntelAgree, working on contract management software. Case studies, field notes and generative projects.',
   email: 'design@brainvat.xyz',
   /** Shown in the footer and on the about page. */
   profiles: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/lwillans/' },
-    // TODO: add more profile links (Dribbble, Read.cv, GitHub, â€¦)
+    // TODO: add more profile links (Dribbble, Read.cv, GitHub, …)
   ] as { label: string; href: string }[],
   nav: [
     { label: 'Work', href: '/work' },

@@ -1,0 +1,55 @@
+---
+title: Interface as Evidence
+description: Why the working component is a more honest design record than the specification that introduced it.
+year: 2024
+tags:
+  - Writing
+  - Systems
+kind: Paper
+order: 2
+---
+
+Specifications describe what a team intended. Interfaces describe what it shipped. When the two
+disagree, the interface is usually the more reliable document, because it had to survive contact
+with real use.
+
+<Card title="Three records of a decision" label="The argument" color="green">
+
+1. **The spec** — what we said we would build. Easy to write, and easy to leave behind.
+2. **The artefact** — what exists now, including the compromises made under deadline.
+3. **The trace** — how people actually used it, which is the only record that can tell us whether
+   the first two mattered.
+
+Most teams keep the first record carefully and lose the other two. Then they wonder why the design
+system no longer matches the product.
+
+</Card>
+
+A component library is the easiest place to see the gap. The library is the artefact; usage data is
+the trace. If a pattern has no usages, the system has quietly changed without anyone writing that
+change down.
+
+<LooseCard title="A small exercise" color="blush">
+
+Pick one component from a library you know. Find every place it is used, then find the note that
+introduced it. Compare the two. The distance between them is the real design history — usually a
+story about deadlines, or one team that needed something slightly different.
+
+</LooseCard>
+
+<Quote attribution="From a review of our own library">
+
+The spec said the component was for errors. Every real use was for empty states. We had documented
+the intention and missed the function.
+
+</Quote>
+
+<Callout label="Practical version" title="Keep the artefact next to the decision" tone="green" foot="A disagreement between the two is usually the next decision hiding in plain sight.">
+
+When you write down a decision, link to the component that carries it. If the component changes
+and the note does not, that is worth investigating rather than tidying up.
+
+</Callout>
+
+My proposal is simple: treat the working interface as evidence, not as the outcome of a process
+that ended at the spec. The record survives because somebody had to maintain the thing.

@@ -1,0 +1,159 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+}
+
+const { src, alt, caption, width = 1600, height = 1000 } = Astro.props;
+---
+
+<figure class="lightbox-image" data-lightbox>
+  <button
+    class="lightbox-image__trigger"
+    type="button"
+    data-lightbox-trigger
+    aria-label={`Zoom image: ${alt}`}
+  >
+    <img src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
+    <span class="lightbox-image__hint" aria-hidden="true">Click to zoom</span>
+  </button>
+  {caption && <figcaption>{caption}</figcaption>}
+
+  <dialog class="lightbox-image__dialog" data-lightbox-dialog aria-label={alt}>
+    <button class="lightbox-image__close" type="button" data-lightbox-close aria-label="Close image">
+      ×
+    </button>
+    <img src={src} alt={alt} width={width} height={height} />
+  </dialog>
+</figure>
+
+<script>
+  function bindLightboxes() {
+    document.querySelectorAll<HTMLElement>('[data-lightbox]').forEach((root) => {
+      if (root.dataset.lightboxBound) return;
+      root.dataset.lightboxBound = 'true';
+      const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox-dialog]');
+      const trigger = root.querySelector<HTMLButtonElement>('[data-lightbox-trigger]');
+      const close = root.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+      trigger?.addEventListener('click', () => dialog?.showModal());
+      close?.addEventListener('click', () => dialog?.close());
+      dialog?.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+  }
+
+  bindLightboxes();
+  document.addEventListener('astro:page-load', bindLightboxes);
+</script>
+
+<style>
+  .lightbox-image {
+    /* Printed on the sheet, so it travels with that sheet's transition. */
+    margin-block: var(--space-6);
+  }
+
+  .lightbox-image__trigger {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .lightbox-image__trigger img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .lightbox-image__hint {
+    position: absolute;
+    inset-block-end: var(--space-3);
+    inset-inline-end: var(--space-3);
+    padding: var(--prop-pad);
+    background: color-mix(in srgb, var(--scrim) 72%, transparent);
+    color: var(--offwhite);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    opacity: 0;
+    transition: opacity var(--duration-1) var(--ease);
+  }
+
+  .lightbox-image__trigger:hover .lightbox-image__hint,
+  .lightbox-image__trigger:focus-visible .lightbox-image__hint {
+    opacity: 1;
+  }
+
+  figcaption {
+    margin-block-start: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    max-width: 60ch;
+  }
+
+  /* Keep the native closed state: our display rule below would otherwise show
+     the zoom image inline on the page. */
+  .lightbox-image__dialog:not([open]) {
+    display: none;
+  }
+
+  .lightbox-image__dialog {
+    position: fixed;
+    inset: 0;
+    inline-size: 100vw;
+    max-inline-size: none;
+    block-size: 100vh;
+    max-block-size: none;
+    margin: 0;
+    padding: var(--space-6);
+    border: 0;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    cursor: zoom-out;
+  }
+
+  .lightbox-image__dialog::backdrop {
+    background: color-mix(in srgb, var(--scrim) 88%, transparent);
+    backdrop-filter: blur(6px);
+  }
+
+  .lightbox-image__dialog img {
+    max-inline-size: 92vw;
+    max-block-size: 86vh;
+    inline-size: auto;
+    block-size: auto;
+    object-fit: contain;
+    box-shadow: var(--shadow-desk);
+    cursor: default;
+  }
+
+  .lightbox-image__close {
+    position: absolute;
+    inset-block-start: var(--space-4);
+    inset-inline-end: var(--space-4);
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border: 2px solid var(--offwhite);
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--scrim) 70%, transparent);
+    color: var(--offwhite);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-image__hint {
+      transition: none;
+    }
+  }
+</style>

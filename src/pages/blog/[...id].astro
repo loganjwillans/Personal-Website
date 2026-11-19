@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostLayout from '@/layouts/PostLayout.astro';
+import * as components from '@/components/content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -23,6 +24,6 @@ const { data } = entry;
   publishedTime={data.pubDate.toISOString()}
 >
   <PostLayout entry={entry}>
-    <Content />
+    <Content components={components} />
   </PostLayout>
 </BaseLayout>

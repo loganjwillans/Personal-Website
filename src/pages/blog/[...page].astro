@@ -4,7 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
-import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
+import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   page: Page<CollectionEntry<'blog'>>;
@@ -27,6 +27,7 @@ const filterTilt = tiltStyle(hashTilt('blog-filter'));
 const vtHead = viewName(Astro.url.pathname, 'head');
 const vtFilter = viewName(Astro.url.pathname, 'filter');
 const vtPager = viewName(Astro.url.pathname, 'pager');
+const pagerPins = pinStyle(hashTilt('blog-pager'));
 ---
 
 <BaseLayout
@@ -104,7 +105,7 @@ const vtPager = viewName(Astro.url.pathname, 'pager');
 
       <div
         class="pager-card sheet pin pin--corners"
-        style={`--vt-name: ${vtPager}; view-transition-class: vt vt-d4;`}
+        style={`${pagerPins}; --vt-name: ${vtPager}; view-transition-class: vt vt-d4;`}
       >
         <p
           id="blog-results"

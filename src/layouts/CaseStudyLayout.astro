@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import ProtectedContent from '@/components/ProtectedContent.astro';
 import LockIcon from '@/components/LockIcon.astro';
 import { envNameForId } from '@/lib/slug';
-import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
+import { hashTilt, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'work'>;
@@ -12,7 +12,6 @@ interface Props {
 const { entry } = Astro.props;
 const { data, id } = entry;
 const headTilt = tiltStyle(hashTilt(id));
-const bodyPin = pinStyle(hashTilt(`${id}-body`));
 // Page-scoped names: nothing here can pair with another page's copy.
 const vtHead = viewName(Astro.url.pathname, 'head');
 const vtCover = viewName(Astro.url.pathname, 'cover');
@@ -91,36 +90,19 @@ const facts = [
     )
   }
 
-  <div class="container container--narrow">
-    {
-      data.placeholder && (
-        <aside class="cs-placeholder prop">
-          <p>
-            <strong>Sample content.</strong> This case study ships as a structural demo. Replace
-            the copy with real work (or delete the file) before sharing the site.
-          </p>
-        </aside>
-      )
-    }
-
-    {
-      data.protected ? (
-        <ProtectedContent slug={id} passwordEnv={data.passwordEnv ?? envNameForId(id)}>
-          <slot />
-        </ProtectedContent>
-      ) : (
-        <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
+  {
+    data.protected ? (
+      <ProtectedContent slug={id} passwordEnv={data.passwordEnv ?? envNameForId(id)}>
+        <slot />
+      </ProtectedContent>
+    ) : (
+      <div class="container container--narrow">
+        <div class="prose" style={`--vt-name: ${vtBody};`}>
           <slot />
         </div>
-      )
-    }
-
-    <nav class="cs-footer" aria-label="Case study">
-      <a class="button" href="/work/" style={markerStyle(`case-study:${id}:all-work`)}>
-        ← All work
-      </a>
-    </nav>
-  </div>
+      </div>
+    )
+  }
 </article>
 
 <style>
@@ -148,6 +130,11 @@ const facts = [
     max-width: 20ch;
   }
 
+  /* Match the blog hero's rhythm: space under the eyebrow/back row. */
+  .stack > .cs-title {
+    margin-block-start: var(--space-6);
+  }
+
   .cs-summary {
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
@@ -160,7 +147,12 @@ const facts = [
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: var(--space-4);
     margin: 0;
-    padding-block-start: var(--space-5);
+    /* Same gap the blog hero gives its meta line. */
+    padding-block-start: 0;
+  }
+
+  .stack > .cs-facts {
+    margin-block-start: var(--space-4);
   }
 
   .cs-fact dt {
@@ -185,6 +177,18 @@ const facts = [
     list-style: none;
   }
 
+  .stack > .cs-tags {
+    margin-block-start: var(--space-5);
+  }
+
+  /* The same pill labels the blog posts use, with no marker scribble. */
+  .cs-tags .tag {
+    padding: 0.5em 1em;
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    background: transparent;
+  }
+
   .cs-cover {
     margin: 0 auto var(--space-6);
     max-width: var(--wide);
@@ -195,22 +199,5 @@ const facts = [
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-  }
-
-  .cs-placeholder {
-    /* A note printed on the header sheet's paper. */
-    display: block;
-    margin-block-end: var(--panel-stack);
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    background: var(--surface-2);
-  }
-
-  .cs-footer {
-    margin-block-start: var(--space-8);
-  }
-
-  .prose.sheet {
-    padding: var(--sheet-pad);
   }
 </style>

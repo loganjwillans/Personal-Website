@@ -15,32 +15,83 @@ coverAlt: Three intake steps in sequence, narrowing the questions asked, ending 
 featured: true
 order: 2
 protected: true
-placeholder: true
 ---
 
-import Decision from '@/components/case-study/Decision.astro';
-import Figure from '@/components/case-study/Figure.astro';
+Intake was the step before any real work happened: someone in sales needed a contract, and had to
+describe what kind it was, to whom, for how long, and under which paper. The form had forty fields,
+eleven of them mandatory, and a help article nobody opened.
 
-Intake was the step before any real work happened: someone in sales needed a contract, and had to describe what kind of contract it was, to whom, for how long, and under which paper. The form had forty fields, eleven of them mandatory, and a help article that nobody opened.
+This case study is protected because it includes internal process detail. The password opens the
+full write-up: the research approach, the two competing models we prototyped, what we shipped, and
+the parts that did not land.
 
-This case study is protected because it includes internal process detail. Enter the password to read the full write-up: the research approach, the two competing models we prototyped, what we shipped, and the parts that didn't land.
+<Card title="The short version" label="Outcome" color="blue">
 
-## The short version
+We replaced the single form with a guided intake that asks three questions, then reveals only what
+the chosen path needs. Median completion time dropped by more than half, and "wrong template"
+support tickets fell by two thirds.
 
-We replaced the single form with a guided intake that asks three questions, then progressively reveals only what the chosen path needs. Median completion time dropped by more than half, and the volume of "wrong template" support tickets fell by two thirds.
-
-<Decision
-  title="Progressive disclosure beat a smarter form"
-  tradeoff="Power users who request the same contract type weekly lost their single-page shortcut."
->
-  We tested two models: a smarter single form with conditional logic, and a multi-step flow that
-  branched early. The single form was faster for the 5% of users who knew exactly what they wanted.
-  The branching flow was dramatically better for everyone else — and everyone else was 80% of
-  volume.
-</Decision>
+</Card>
 
 <Figure
+  src="/images/work/contract-intake-cover.svg"
+  alt="Three intake steps in sequence, narrowing the questions asked, ending in a review card."
+  caption="The shape of the new intake: three questions, a branch, and a review before submission."
+/>
+
+## The two models
+
+<Callout
+  label="Decision"
+  title="Progressive disclosure beat a smarter form"
+  color="green"
+  foot="Trade-off: power users who request the same contract type weekly lost their single-page shortcut."
+>
+  We tested a smarter single form with conditional logic against a multi-step flow that branched
+  early. The single form was faster for the 5% of users who knew exactly what they wanted. The
+  branching flow was dramatically better for everyone else — and everyone else was 80% of volume.
+</Callout>
+
+<LightboxImage
   src="/images/work/contract-intake.svg"
   alt="Three-step intake flow branching by contract type, with a summary step before submission."
-  caption="Placeholder diagram of the intake flow: three questions, then a branch, then a review step."
+  caption="Click to zoom: the branch as we shipped it, with the summary step before submission."
 />
+
+<LooseCard title="The part that did not land" color="cream">
+
+We tried to preserve a "repeat last request" shortcut for frequent requesters. It tested well with
+people who already knew the form, but sat awkwardly inside a flow designed for people who did not.
+We cut it rather than complicate the main path, and gave frequent users a saved template instead.
+
+</LooseCard>
+
+<MetricGrid
+  items={[
+    { value: '40 → 3', label: 'questions before branching', note: 'eleven were mandatory' },
+    { value: '> 50%', label: 'faster completion', note: 'median' },
+    { value: '−67%', label: 'wrong-template tickets', note: 'after two months' }
+  ]}
+/>
+
+<Quote>
+
+Nobody reads instructions at the moment they are most stressed. Design for that moment, not for the
+calm one in which the help article was written.
+
+</Quote>
+
+<Callout label="Trade-off" title="A shortcut for some, a clearer path for most" tone="yellow" foot="We would make the same call again.">
+
+The 5% who lost their one-page form were the loudest voices in testing. The other 80% never had to
+write a support ticket about picking the wrong template again.
+
+</Callout>
+
+<EntryFooter href="/work/" label="All work">
+  <p>
+    The full write-up is protected because it includes internal process detail. Reach me at
+    <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a> if you want to talk through the
+    approach.
+  </p>
+</EntryFooter>

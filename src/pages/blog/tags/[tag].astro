@@ -54,13 +54,26 @@ const vtHead = viewName(Astro.url.pathname, 'head');
     padding-block: var(--space-8) var(--space-7);
   }
 
+  /* The page-head's bottom padding plus this section's top padding would
+     otherwise leave nearly twice the gap a blog post has before its content. */
+  .page-head + .section {
+    padding-block-start: var(--space-2);
+  }
+
   .page-title {
     font-size: var(--text-3xl);
     margin: 0;
   }
 
+  /* Match the blog post hero: room under the back button, then the same gap
+     from the headline to the summary. */
+  .stack > .page-title {
+    margin-block-start: var(--space-6);
+  }
+
   .page-lede {
     color: var(--text);
+    margin-block-start: var(--space-4);
   }
 
   .page-head-sheet {

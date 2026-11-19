@@ -1,0 +1,55 @@
+---
+interface Props {
+  /** Who said it, printed under the quote. */
+  attribution?: string;
+}
+
+const { attribution } = Astro.props;
+const path = Astro.url.pathname;
+const accent = path.startsWith('/work')
+  ? 'var(--route-work)'
+  : path.startsWith('/projects')
+    ? 'var(--route-projects)'
+    : path.startsWith('/blog')
+      ? 'var(--route-blog)'
+      : 'var(--route-about)';
+const tint = `color-mix(in srgb, ${accent} 12%, var(--sheet))`;
+---
+
+<blockquote class="pull-quote" style={`--quote-tint: ${tint}; --quote-accent: ${accent};`}>
+  <slot />
+  {attribution && <cite>{attribution}</cite>}
+</blockquote>
+
+<style>
+  .pull-quote {
+    margin-block: var(--space-7);
+    padding-inline-start: var(--space-5);
+    border-inline-start: 4px solid var(--quote-accent, var(--route-work));
+    background-color: var(--quote-tint, var(--surface-2));
+    background-image: var(--paper-texture);
+    background-size: var(--paper-texture-size);
+    background-blend-mode: var(--paper-texture-blend);
+    padding: var(--space-4) var(--space-5);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    color: var(--text);
+  }
+
+  .pull-quote :global(p) {
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  cite {
+    display: block;
+    margin-block-start: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-style: normal;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+</style>

@@ -14,15 +14,14 @@ const helpId = `password-help-${slug}`;
 const errorId = `password-error-${slug}`;
 const mailto = `mailto:${site.email}?subject=${encodeURIComponent(site.accessRequestSubject)}`;
 const gatePin = pinStyle(hashTilt(slug));
-const bodyPin = pinStyle(hashTilt(`${slug}-body`));
 const vtGate = viewName(Astro.url.pathname, 'gate');
 const vtBody = viewName(Astro.url.pathname, 'body');
 ---
 
 <div class="protected" data-protected data-slug={slug} data-password-env={passwordEnv}>
-  <div class="gate object pin" data-gate style={`${gatePin}; --vt-name: ${vtGate};`}>
+  <div class="container">
+    <div class="gate object pin" data-gate style={`${gatePin}; --vt-name: ${vtGate};`}>
     <div class="gate__head">
-      <span class="lock-badge prop"><LockIcon size={11} /> Protected</span>
       <h2 class="gate__title">This case study is password protected</h2>
       <p class="gate__intro">
         It contains work that isn't public. Enter the password you were given to read it.
@@ -92,21 +91,28 @@ const vtBody = viewName(Astro.url.pathname, 'body');
         <a href={mailto}>{site.email}</a> and I'll send you a PDF.
       </p>
     </noscript>
+    </div>
   </div>
 
-  <div class="unlocked-bar object" data-unlocked-bar hidden>
-    <span class="lock-badge prop"><LockIcon size={11} /> Unlocked for this session</span>
-    <button
-      class="button button--quiet"
-      type="button"
-      data-lock
-      style={markerStyle(`gate:${slug}:lock`)}
-    >
-      Lock page
-    </button>
+  <div class="container">
+    <div class="unlocked-bar object" data-unlocked-bar hidden>
+      <span class="lock-badge prop"><LockIcon size={11} /> Unlocked for this session</span>
+      <button
+        class="button button--quiet"
+        type="button"
+        data-lock
+        style={markerStyle(`gate:${slug}:lock`)}
+      >
+        Lock page
+      </button>
+    </div>
   </div>
 
-  <template data-protected-source><div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}><slot /></div></template>
+  <template data-protected-source>
+    <div class="container container--narrow">
+      <div class="prose" style={`--vt-name: ${vtBody};`}><slot /></div>
+    </div>
+  </template>
 
   <div class="protected__content" data-protected-output tabindex="-1" hidden></div>
 </div>
@@ -282,7 +288,6 @@ const vtBody = viewName(Astro.url.pathname, 'body');
 
   .gate {
     padding: clamp(var(--space-5), 4vw, var(--space-7));
-    max-width: 34rem;
   }
 
   .gate__head {
@@ -322,8 +327,9 @@ const vtBody = viewName(Astro.url.pathname, 'body');
   .field__control {
     display: flex;
     align-items: stretch;
-    /* A printed field: a tint, no frame. */
-    background: var(--surface-2);
+    /* An outlined field, printed the same way as a button. */
+    border: 2px solid var(--border-strong);
+    background: transparent;
     overflow: hidden;
   }
 
@@ -404,9 +410,5 @@ const vtBody = viewName(Astro.url.pathname, 'body');
 
   .protected__content:focus-visible {
     outline: none;
-  }
-
-  .prose.sheet {
-    padding: var(--sheet-pad);
   }
 </style>

@@ -1,0 +1,84 @@
+---
+interface Props {
+  /** Heading printed in the body. */
+  title?: string;
+  /** Body copy, as an alternative to slot content. */
+  text?: string;
+  /** Small label in the coloured strip above the body. */
+  label?: string;
+  /** Strip colour. `tone` is kept as an alias. */
+  color?: 'green' | 'blue' | 'yellow' | 'blush' | 'paper';
+  tone?: 'green' | 'blue' | 'yellow' | 'blush' | 'paper';
+  /** Optional closing line, e.g. a trade-off. */
+  foot?: string;
+}
+
+const { title, text, label, color, tone, foot } = Astro.props;
+const shade = color ?? tone ?? 'green';
+const accents = {
+  green: 'var(--route-projects)',
+  blue: 'var(--route-work)',
+  yellow: 'var(--route-about)',
+  blush: 'var(--blush)',
+  paper: 'var(--cream)',
+};
+const tint = `color-mix(in srgb, ${accents[shade]} 14%, var(--sheet))`;
+---
+
+<aside class="callout" style={`--callout-tint: ${tint};`}>
+  {label && <p class:list={['callout__label', `callout__label--${shade}`]}>{label}</p>}
+  <div class="callout__body">
+    {title && <h3 class="callout__title">{title}</h3>}
+    {text ? <p>{text}</p> : <slot />}
+    {foot && <p class="callout__foot">{foot}</p>}
+  </div>
+</aside>
+
+<style>
+  .callout {
+    background-color: var(--callout-tint, var(--surface-2));
+    background-image: var(--paper-texture);
+    background-size: var(--paper-texture-size);
+    background-blend-mode: var(--paper-texture-blend);
+    margin-block: var(--space-6);
+    overflow: hidden;
+  }
+
+  .callout__label {
+    margin: 0;
+    padding: var(--space-2) var(--space-5);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--charcoal);
+  }
+
+  .callout__label--green { background: var(--green); }
+  .callout__label--blue { background: var(--blue); }
+  .callout__label--yellow { background: var(--yellow); }
+  .callout__label--blush { background: var(--blush); }
+  .callout__label--paper { background: var(--cream); }
+
+  .callout__body {
+    padding: var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--text);
+  }
+
+  .callout__body :global(p) {
+    max-width: 56ch;
+  }
+
+  .callout__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-lg);
+  }
+
+  .callout__foot {
+    margin: var(--space-4) 0 0;
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--border);
+  }
+</style>

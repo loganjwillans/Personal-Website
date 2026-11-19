@@ -8,33 +8,60 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data, id } = entry;
+const preview = data.preview;
+const image = preview?.image ?? data.poster;
+const title = preview?.title ?? data.title;
+const summary = preview?.summary ?? data.description;
+const showImage = preview?.showImage ?? true;
+const showMeta = preview?.showMeta ?? true;
+const showTags = preview?.showTags ?? true;
 const tilt = tiltStyle(hashTilt(id));
 const vtName = viewName(Astro.url.pathname, `Project-${id}`);
 ---
 
-<article class="Project">
+<article class="Project" data-tags={data.tags.join('|')}>
   <a
     class="Project__link object pin lift"
     href={`/projects/${id}/`}
     style={`${tilt}; --vt-name: ${vtName};`}
   >
-    <img
-      class="Project__poster"
-      src={data.poster}
-      alt=""
-      width="800"
-      height="600"
-      loading="lazy"
-      decoding="async"
-    />
+    {
+      showImage ? (
+        image ? (
+          <img
+            class="Project__poster"
+            src={image}
+            alt=""
+            width="800"
+            height="600"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <span class="Project__poster Project__poster--empty" aria-hidden="true" />
+        )
+      ) : null
+    }
     <div class="Project__body">
-      <div class="Project__meta">
-        <span>{data.year}</span>
-        <span aria-hidden="true">Â·</span>
-        <span>{data.tags.join(' / ')}</span>
-      </div>
-      <h3 class="Project__title">{data.title}</h3>
-      <p class="Project__summary">{data.description}</p>
+      {
+        showMeta && (
+          <div class="Project__meta">
+            <span>{data.kind}</span>
+            <span aria-hidden="true">·</span>
+            <span>{data.year}</span>
+            {
+              showTags && data.tags.length > 0 && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{data.tags.join(' / ')}</span>
+                </>
+              )
+            }
+          </div>
+        )
+      }
+      <h3 class="Project__title">{title}</h3>
+      <p class="Project__summary">{summary}</p>
     </div>
   </a>
 </article>
@@ -50,10 +77,15 @@ const vtName = viewName(Astro.url.pathname, `Project-${id}`);
 
   .Project__poster {
     /* Printed straight on the card's paper: no frame, and no movement of its
-       own â€” only the card lifts. */
+       own — only the card lifts. */
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
+  }
+
+  .Project__poster--empty {
+    /* Projects without a cover still get the same printed block of paper. */
+    background: var(--surface-2);
   }
 
   .Project__body {

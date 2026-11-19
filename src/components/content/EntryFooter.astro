@@ -1,0 +1,55 @@
+---
+import { hashTilt, pinStyle, viewName } from '@/lib/tilt';
+
+interface Props {
+  /** Where the button goes. */
+  href: string;
+  /** Button label. */
+  label: string;
+  /** Stable id when a page has more than one footer card. */
+  name?: string;
+}
+
+const { href, label, name } = Astro.props;
+const slug = (name ?? href)
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '') || 'footer';
+const vtName = viewName(Astro.url.pathname, `entry-footer-${slug}`);
+const hash = [...slug].reduce((h, char) => (Math.imul(h, 31) + char.charCodeAt(0)) >>> 0, 7);
+const style = [
+  pinStyle(hashTilt(slug)),
+  `--vt-name: ${vtName}`,
+  `view-transition-class: vt vt-d${(hash % 4) + 1}`,
+].join('; ');
+---
+
+<footer class="entry-footer sheet pin pin--corners" style={style}>
+  <div class="entry-footer__text"><slot /></div>
+  <a class="button" href={href} rel="noopener">{label}</a>
+</footer>
+
+<style>
+  .entry-footer {
+    view-transition-name: var(--vt-name);
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    margin-block-start: var(--space-9);
+    padding: var(--sheet-pad);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .entry-footer__text :global(p) {
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .entry-footer__text :global(a) {
+    text-decoration: underline;
+    text-decoration-color: var(--ink);
+    text-underline-offset: 0.25em;
+    color: var(--text);
+  }
+</style>

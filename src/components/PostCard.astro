@@ -9,6 +9,11 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data, id } = entry;
+const preview = data.preview;
+const title = preview?.title ?? data.title;
+const summary = preview?.summary ?? data.description;
+const showMeta = preview?.showMeta ?? true;
+const showTags = preview?.showTags ?? true;
 const tilt = tiltStyle(hashTilt(id));
 const vtName = viewName(Astro.url.pathname, `post-${id}`);
 ---
@@ -19,20 +24,24 @@ const vtName = viewName(Astro.url.pathname, `post-${id}`);
   data-tags={data.tags.join('|')}
 >
   <h3 class="post-row__title">
-    <a href={`/blog/${id}/`}>{data.title}</a>
+    <a href={`/blog/${id}/`}>{title}</a>
   </h3>
-  <p class="post-row__summary">{data.description}</p>
-  <div class="post-row__meta">
-    <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
-    {
-      data.tags.length > 0 && (
-        <>
-          <span aria-hidden="true">·</span>
-          <span>{data.tags.join(', ')}</span>
-        </>
-      )
-    }
-  </div>
+  <p class="post-row__summary">{summary}</p>
+  {
+    showMeta && (
+      <div class="post-row__meta">
+        <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+        {
+          showTags && data.tags.length > 0 && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{data.tags.join(', ')}</span>
+            </>
+          )
+        }
+      </div>
+    )
+  }
 </article>
 
 <style>

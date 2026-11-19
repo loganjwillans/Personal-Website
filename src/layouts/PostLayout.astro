@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, readingLabel } from '@/lib/format';
-import { hashTilt, markerStyle, pinStyle, tiltStyle, viewName } from '@/lib/tilt';
+import { hashTilt, markerStyle, tiltStyle, viewName } from '@/lib/tilt';
 
 interface Props {
   entry: CollectionEntry<'blog'>;
@@ -10,12 +10,9 @@ interface Props {
 const { entry } = Astro.props;
 const { data, body, id } = entry;
 const headTilt = tiltStyle(hashTilt(id));
-const bodyPin = pinStyle(hashTilt(`${id}-body`));
-const footPin = pinStyle(hashTilt(`${id}-footer`));
 // Page-scoped names: nothing here can pair with another page's copy.
 const vtHead = viewName(Astro.url.pathname, 'head');
 const vtBody = viewName(Astro.url.pathname, 'body');
-const vtFoot = viewName(Astro.url.pathname, 'foot');
 ---
 
 <article class="post">
@@ -61,20 +58,9 @@ const vtFoot = viewName(Astro.url.pathname, 'foot');
   </header>
 
   <div class="container container--narrow">
-    <div class="prose sheet pin pin--corners" style={`${bodyPin}; --vt-name: ${vtBody};`}>
+    <div class="prose" style={`--vt-name: ${vtBody};`}>
       <slot />
     </div>
-
-    <footer
-      class="post-footer sheet pin pin--corners"
-      style={`${footPin}; --vt-name: ${vtFoot};`}
-    >
-      <p>
-        Written by Logan Willans. Replies and corrections are welcome at
-        <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a>.
-      </p>
-      <a class="button" href="/blog/" style={markerStyle(`post:${id}:more`)}>Read more posts</a>
-    </footer>
   </div>
 </article>
 
@@ -134,28 +120,7 @@ const vtFoot = viewName(Astro.url.pathname, 'foot');
     background: transparent;
   }
 
-  .post-footer {
-    display: grid;
-    gap: var(--space-5);
-    margin-block-start: var(--space-9);
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-  }
-
-  .post-head-sheet,
-  .post-footer.sheet {
-    padding: var(--sheet-pad);
-  }
-
-  .post-footer p {
-    max-width: 56ch;
-  }
-
-  .post-footer .button {
-    justify-self: start;
-  }
-
-  .prose.sheet {
+  .post-head-sheet {
     padding: var(--sheet-pad);
   }
 </style>

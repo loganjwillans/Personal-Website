@@ -14,85 +14,107 @@ cover: /images/work/contract-review.svg
 coverAlt: A contract review layout with a document on the left and a clause panel on the right.
 featured: true
 order: 1
-placeholder: true
 ---
 
-import Figure from '@/components/case-study/Figure.astro';
-import Decision from '@/components/case-study/Decision.astro';
-import MetricGrid from '@/components/case-study/MetricGrid.astro';
+Contract review is the least glamorous part of contract management, and the part where the money
+is. A reviewer opens a redlined document, compares it against a playbook, checks a clause library,
+and decides whether each change is acceptable. In our product that meant four panes, three
+scrollbars, and a spreadsheet someone kept on a second monitor.
 
-Contract review is the least glamorous part of contract management, and the part where the money is. A reviewer opens a redlined document, compares it against a playbook, checks a clause library, and decides whether each change is acceptable. In our product, that meant four panes, three scrollbars, and a spreadsheet someone kept on a second monitor.
+<Figure
+  src="/images/work/contract-review.svg"
+  alt="The original review workspace, with four panes and a document in the middle."
+  caption="The starting point: one document, three supporting panes, and a lot of scrollbars."
+/>
 
-This is the story of rebuilding that surface — and of the two decisions that did most of the work.
+<Card title="The question we framed" label="Context" color="blue">
 
-## Context
+IntelAgree's reviewer workspace had grown feature by feature for years. Every request added a panel,
+because adding a panel was the cheapest way to say yes. By the time I joined the squad there were
+eleven interactive regions, and a reviewer's first action was usually to close four of them.
 
-IntelAgree's reviewer workspace had grown feature by feature for years. Every request added a panel, because adding a panel was the cheapest way to say yes. By the time I joined the squad, the default view had eleven interactive regions and a legal reviewer's first action was usually to close four of them.
+We framed the problem as one question: **can a reviewer answer "what changed and does it matter?"
+without leaving the document?** Not "make it prettier" and not "reduce clicks" — those are
+outcomes, not problems.
 
-The team knew it was heavy. What we didn't know was which parts were load-bearing.
-
-## The problem
-
-We framed it as a single question: **can a reviewer answer "what changed and does it matter?" without leaving the document?**
-
-Everything else was secondary. Not "make it prettier", not "reduce clicks" — those are outcomes, not problems. The measurable version was time-to-first-decision per redline, and the qualitative version was how confident reviewers felt when they accepted a change.
+</Card>
 
 ## What we heard
 
-We sat with six reviewers across three customers, watching them work through live contracts rather than test data. Three findings shaped everything after:
+We sat with six reviewers across three customers, watching them work through live contracts rather
+than test data.
 
-- **The document is the source of truth, not the panel.** Every reviewer scrolled the document first, then looked for corroboration. Our layout did the opposite — it put the metadata panel first in reading order.
-- **Reviewers trust their own marks.** They annotated with highlighters and comments even when the system had already flagged a clause. The annotation wasn't redundant; it was how they remembered their reasoning.
-- **The playbook is a memory aid, not a checklist.** Reviewers rarely read it top to bottom. They jumped to the clause they were already worried about.
+- **The document is the source of truth, not the panel.** Reviewers scrolled the document first,
+  then looked for corroboration. Our layout put the metadata panel first in reading order.
+- **Reviewers trust their own marks.** They annotated with highlighters even when the system had
+  already flagged a clause. The annotation was how they remembered their reasoning.
+- **The playbook is a memory aid, not a checklist.** Reviewers jumped to the clause they were
+  already worried about rather than reading it top to bottom.
 
 ## The decisions that mattered
 
-<Decision
-  title="Put the clause context next to the change, not in a side panel"
-  tradeoff="The document column got narrower, and we lost the ability to pin more than one clause at a time."
+<Callout
+  label="Decision"
+  title="Put clause context next to the change, not in a side panel"
+  color="green"
+  foot="Trade-off: the document column got narrower, and we lost the ability to pin more than one clause at a time."
 >
   We moved deviation flags and playbook guidance inline, anchored to the change itself. The side
-  panel stayed for navigation and search, but it stopped being the place where judgement happened.
-  Reviewers no longer had to hold a clause reference in their head while reading a paragraph.
-  
-  This is the change people noticed in the first five minutes of testing, and the one that survived
-  every later round of cuts.
-</Decision>
+  panel stayed for navigation and search, but it stopped being where judgement happened. This was
+  the change people noticed in the first five minutes of testing, and the one that survived every
+  later round of cuts.
+</Callout>
 
-<Decision
+<Callout
+  label="Decision"
   title="Treat reviewer annotations as first-class data"
-  tradeoff="We had to store and sync private notes per reviewer, which added a permissions surface we'd previously avoided."
+  color="green"
+  foot="Trade-off: we had to store and sync private notes per reviewer, adding a permissions surface we had avoided."
 >
-  Instead of trying to replace the highlighter habit, we absorbed it. Reviewers can mark any change
-  with a private note, visible only to them, that persists across sessions. Their reasoning stays
-  attached to the thing they were reasoning about.
-  
-  It also gave us something unexpected: a signal about which clauses consistently needed
+  Instead of replacing the highlighter habit, we absorbed it. Reviewers can mark any change with a
+  private note that persists across sessions, so their reasoning stays attached to the thing they
+  were reasoning about. It also gave us a signal about which clauses consistently needed
   explanation, which fed back into the playbook.
-</Decision>
+</Callout>
 
-## What shipped
-
-<Figure
+<LightboxImage
   src="/images/work/contract-review-detail.svg"
   alt="A single redline expanded in place, showing the change, the playbook rule it touches, and a private reviewer note."
-  caption="The expanded redline: change, rule, and the reviewer's own note in one column. Figure is a placeholder diagram."
+  caption="Click the image to zoom in on the expanded redline. Figure is a placeholder diagram."
 />
 
-The final surface has one primary column and one utility column. Everything that used to live in a panel is either inline, in the utility column, or gone. We deleted more than we added — nine panels became two, and four of them had no usage data worth defending.
-
-## Outcomes
+<LooseCard title="Outcomes" color="cream">
 
 <MetricGrid
   items={[
-    { value: '41%', label: 'faster time-to-first-decision', note: 'median, 24 sessions' },
+    { value: '41%', label: 'faster first decision', note: 'median, 24 sessions' },
     { value: '9 → 2', label: 'panels in the default view', note: 'four had no usage' },
-    { value: '3.1/5 → 4.4/5', label: 'reviewer confidence (self-reported)', note: 'post-task survey' }
+    { value: '3.1 → 4.4', label: 'reviewer confidence', note: 'post-task, five-point scale' }
   ]}
 />
 
-The confidence number is the one I care about. Speed can be bought by hiding things. Confidence is what you get when the surface matches how the work is actually done.
+The confidence number is the one I care about. Speed can be bought by hiding things. Confidence is
+what you get when the surface matches how the work is actually done.
 
-## What I'd do differently
+</LooseCard>
 
-We shipped the inline annotations in the same release as the layout change, which made it impossible to attribute the confidence gain to either one. In hindsight, annotations should have been a second release with their own measurement window. We were lucky the story held up; we couldn't prove it.
+<Quote attribution="A reviewer, after the session">
+
+I stopped keeping the spreadsheet on the second monitor after the first week. That was when I knew
+the new layout had worked.
+
+</Quote>
+
+<Callout label="What I would change" title="Separate the releases" tone="blue" foot="We shipped annotations and layout together, so we could not attribute the gain.">
+
+The annotations should have been a second release with their own measurement window. We were lucky
+the story held up; we could not prove it.
+
+</Callout>
+
+<EntryFooter href="/work/" label="All work">
+  <p>
+    Written by Logan Willans. If you have seen this pattern in your own review process, I would like
+    to hear about it.
+  </p>
+</EntryFooter>

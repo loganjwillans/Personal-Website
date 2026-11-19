@@ -118,6 +118,18 @@ export function pinStyle(values: TiltValues): string {
   return [...pinVars(values.pin, '--pin'), ...pinVars(values.pinAlt, '--pin-b')].join('; ');
 }
 
+/**
+ * Choose the fasteners for one component instance. `random` picks a fresh pair
+ * each render; a fixed kind is used for both corners with a random colour.
+ */
+export function pinStyleFor(choice: 'tack' | 'pushpin' | 'random'): string {
+  const pick = () => {
+    const kind = choice === 'random' ? (Math.random() < 0.5 ? 'tack' : 'pushpin') : choice;
+    return { kind, color: PALETTE[Math.floor(Math.random() * PALETTE.length)] } as PinValues;
+  };
+  return pinStyle({ tilt: 0, jitterX: 0, jitterY: 0, pin: pick(), pinAlt: pick() });
+}
+
 export function tiltStyle(values: TiltValues): string {
   return [
     `--tilt: ${values.tilt.toFixed(3)}deg`,

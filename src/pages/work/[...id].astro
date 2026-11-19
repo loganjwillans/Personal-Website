@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import CaseStudyLayout from '@/layouts/CaseStudyLayout.astro';
+import * as components from '@/components/content';
 
 export async function getStaticPaths() {
   const work = await getCollection('work');
@@ -24,6 +25,6 @@ const { data } = entry;
   type="article"
 >
   <CaseStudyLayout entry={entry}>
-    <Content />
+    <Content components={components} />
   </CaseStudyLayout>
 </BaseLayout>

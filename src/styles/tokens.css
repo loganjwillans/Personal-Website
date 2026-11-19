@@ -9,6 +9,7 @@
   --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
   --font-display: 'Space Grotesk', var(--font-sans);
+  --font-marker: 'Permanent Marker', cursive;
   --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
     monospace;
 
@@ -216,13 +217,13 @@
   --prop-pad: 0.45em 0.85em;
 
   /* Highlighter swipe behind a button label. markerStyle() (src/lib/tilt.ts)
-     picks one of these per button, or pins an explicit colour; each is a palette
-     colour let down with paper so the ink label keeps its contrast on paper, on
-     a coloured head sheet and in dark mode. */
-  --marker-yellow: color-mix(in srgb, var(--yellow) 65%, var(--paper));
-  --marker-blue: color-mix(in srgb, var(--blue) 65%, var(--paper));
-  --marker-green: color-mix(in srgb, var(--green) 65%, var(--paper));
-  --marker-red: color-mix(in srgb, var(--red) 65%, var(--paper));
+     picks one of these per button, or pins an explicit colour. They are the same
+     four saturated route colours the homepage buttons use, so every scribble
+     reads as the site's yellow, blue, green or red. */
+  --marker-yellow: var(--yellow);
+  --marker-blue: var(--route-work);
+  --marker-green: var(--route-projects);
+  --marker-red: var(--route-blog);
   --marker-blush: color-mix(in srgb, var(--blush) 65%, var(--paper));
   --marker: var(--marker-yellow);
 

@@ -7,30 +7,71 @@ tags:
   - Process
 ---
 
-Every design system starts with the same slide: a grid of components, a type scale, and a promise to expand after launch. Two quarters later the promise is a folder of Figma files nobody opens, and the product is shipping three slightly different buttons.
+Every design system opens with the same slide: a component grid, a type scale, and a promise to
+expand after launch. Two quarters later the promise is a folder of Figma files nobody opens, and the
+product is shipping three slightly different buttons.
 
-I've watched this happen from both sides — as the designer who built the system and as the one who quietly worked around it. The pattern is consistent, and it has less to do with craft than with what the system asks of the people around it.
+I have seen this from both sides — as the designer who built the library and as the person quietly
+working around it. The cause is rarely craft. It is what the system asks of the people who have to
+use it under a deadline.
 
-## A system is a maintenance schedule, not an artefact
+<Card title="A system is a maintenance schedule" label="The reframe" color="blue">
 
-The launch is the easy part. What kills a library is the second and third use: the request that doesn't quite fit, the deadline that makes copying faster than contributing, the engineer who finds the component's API confusing and builds a wrapper instead.
+The launch is the easy part. What kills a library is the second use: the request that does not fit,
+the deadline that makes copying faster than contributing, the engineer who finds the API confusing
+and builds a wrapper instead.
 
-So the real design question isn't "does this button have the right states?" It's "what happens when someone needs a button that doesn't exist yet?"
+So the useful question is not "does this button have the right states?" It is "what happens when
+someone needs a button that does not exist yet?" If the answer is "they wait for the systems team",
+the system loses. If it is "they extend it in a documented way", it survives.
 
-If the answer is "they wait for the design systems team", the system will lose. If the answer is "they extend it in a documented way", it survives.
+</Card>
 
-## Three habits that help
+Three habits have made the biggest difference in the libraries I have worked on.
 
-**Ship the escape hatch with the component.** Every component I've seen survive has a documented way to be wrong on purpose. A `variant` prop, an override slot, a composition pattern. Not because inconsistency is good, but because an unapproved workaround is worse than an approved one.
+<LooseCard title="What actually helps" color="cream">
 
-**Write the rule you'd defend.** Documentation that says "use this for primary actions" is a wish. Documentation that says "one primary action per view, because two competing primaries halve completion in our checkout tests" is a rule with a reason attached — and reasons survive reorganisations.
+- **Ship the escape hatch with the component.** Every survivor has a documented way to be wrong on
+  purpose — a variant, an override slot, a composition pattern. An unapproved workaround is worse
+  than an approved one.
+- **Write the rule you would defend.** "Use this for primary actions" is a wish. "One primary action
+  per view, because two competing primaries halved completion in checkout tests" is a rule with a
+  reason, and reasons survive reorganisations.
+- **Count the workarounds.** How often does a raw `<button>` appear where a system button should?
+  That number tells you more about health than the component count does.
 
-**Measure the workaround rate.** Count how often a raw `<button>` appears where a system button should be. That number tells you more about your system's health than the number of components in it.
+</LooseCard>
 
-## The uncomfortable part
+<MetricGrid
+  items={[
+    { value: '80%', label: 'of cases covered well', note: 'the target, not 100' },
+    { value: '1', label: 'documented escape hatch', note: 'per component' },
+    { value: '0', label: 'components without a rule', note: 'the ones with no reason get deleted' }
+  ]}
+/>
 
-The hardest thing to accept is that some teams are right to work around the system. If a product surface needs a pattern the library doesn't have, the library is the thing that's behind, not the team. Treating every deviation as a discipline problem is how systems teams end up with beautiful libraries and no users.
+<Callout label="The uncomfortable part" title="Sometimes the team is right" tone="yellow" foot="A library that is behind should be treated as behind.">
 
-The version of this I now aim for: a system that is the fastest path for 80% of cases, documented and extensible for the rest, and honest about which 20% it is not serving yet.
+If a product surface needs a pattern the library does not have, the library is the thing that is
+late. Treating every deviation as a discipline problem is how systems teams end up with beautiful
+libraries and no users.
 
-That's a lot less fun to present than a component grid. It's also the version that's still there a year later.
+</Callout>
+
+<Quote attribution="A review of our own library">
+
+We had documented the intention and missed the function. The spec said the component was for
+errors; every real use was an empty state.
+
+</Quote>
+
+The version I aim for now is a system that is the fastest path for most cases, documented and
+extensible for the rest, and honest about which cases it does not serve yet. That is a lot less fun
+to present than a component grid. It is also the version still there a year later.
+
+<EntryFooter href="/blog/" label="Read more posts">
+  <p>
+    Written by Logan Willans. Replies and corrections are welcome at
+    <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a>.
+  </p>
+</EntryFooter>

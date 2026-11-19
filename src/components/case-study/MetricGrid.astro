@@ -1,4 +1,6 @@
 ---
+import { viewName } from '@/lib/tilt';
+
 interface Metric {
   value: string;
   label: string;
@@ -14,8 +16,11 @@ const { items } = Astro.props;
 
 <dl class="metrics">
   {
-    items.map((item) => (
-      <div class="metric">
+    items.map((item, index) => (
+      <div
+        class="metric"
+        style={`--vt-name: ${viewName(Astro.url.pathname, `metric-${index}-${item.value.replace(/[^a-z0-9]+/gi, '-')}`)}; view-transition-class: vt vt-d${(index % 4) + 1};`}
+      >
         <dt class="metric__value">{item.value}</dt>
         <dd class="metric__label">
           {item.label}
@@ -37,29 +42,49 @@ const { items } = Astro.props;
   }
 
   .metric {
-    /* Printed on the prose sheet: a tint block, nothing raised. */
+    view-transition-name: var(--vt-name);
+    /* Little sticky notes pressed onto the sheet: soft yellow stock, a slight
+       hand-placed tilt and a short shadow so each one lifts off the paper. */
     padding: var(--space-5);
-    background: var(--surface-2);
+    background-color: color-mix(in srgb, var(--yellow) 72%, var(--paper));
+    background-image: var(--paper-texture);
+    background-size: var(--paper-texture-size);
+    background-blend-mode: var(--paper-texture-blend);
+    box-shadow: 0 4px 7px color-mix(in srgb, var(--scrim) 28%, transparent);
+    transform: rotate(var(--note-tilt, -1deg));
+    transform-origin: 50% 0;
+  }
+
+  .metric:nth-child(3n + 2) {
+    --note-tilt: 1.2deg;
+    background-color: color-mix(in srgb, var(--yellow) 82%, var(--paper));
+  }
+
+  .metric:nth-child(3n + 3) {
+    --note-tilt: -0.6deg;
+    background-color: color-mix(in srgb, var(--yellow) 64%, var(--paper));
   }
 
   .metric__value {
-    font-size: var(--text-2xl);
-    font-weight: 650;
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-    color: var(--red);
+    font-family: var(--font-marker);
+    font-size: clamp(2rem, 1.7rem + 1.6vw, 2.6rem);
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.2;
+    /* Work blue, deepened a little so it stays legible on the yellow stock. */
+    color: color-mix(in srgb, var(--route-work) 50%, var(--charcoal));
   }
 
   .metric__label {
     margin: var(--space-3) 0 0;
     font-size: var(--text-sm);
-    color: var(--text-muted);
+    color: var(--text);
     display: grid;
     gap: var(--space-2);
   }
 
   .metric__note {
     font-size: var(--text-xs);
-    opacity: 0.8;
+    color: var(--text-muted);
   }
 </style>

@@ -152,7 +152,9 @@ pre {
   padding: var(--space-5);
   border-radius: var(--panel-radius);
   overflow-x: auto;
-  background: var(--surface-2) !important;
+  /* Shiki's default theme paints light tokens, so the block needs a dark ground. */
+  background: var(--charcoal);
+  color: var(--offwhite);
 }
 
 pre code {
@@ -160,6 +162,7 @@ pre code {
   border: 0;
   padding: 0;
   font-size: inherit;
+  color: inherit;
 }
 
 /* ==========================================================================
@@ -273,6 +276,12 @@ pre code {
 [data-theme='dark'] .sheet:not(.sheet--red),
 [data-theme='dark'] .object {
   background-image: none;
+}
+
+/* Prose grouped by the MDX transform: each block is its own sheet. */
+.mdx-sheet {
+  view-transition-name: var(--vt-name);
+  margin-block: var(--space-7);
 }
 
 /* A head sheet marked with its section's route colour: a thick printed band
@@ -763,12 +772,12 @@ pre code {
   margin-block-start: 0;
 }
 
-.prose a {
+.prose a:not(.button) {
   color: var(--text);
   text-decoration-color: var(--border-strong);
 }
 
-.prose a:hover {
+.prose a:not(.button):hover {
   text-decoration-color: var(--accent-text);
   color: var(--accent-text);
 }

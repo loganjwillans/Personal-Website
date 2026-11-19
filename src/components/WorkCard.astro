@@ -11,6 +11,14 @@ interface Props {
 
 const { entry, compact = false } = Astro.props;
 const { data, id } = entry;
+const preview = data.preview;
+const image = preview?.image ?? data.cover;
+const title = preview?.title ?? data.title;
+const summary = preview?.summary ?? data.summary;
+const showImage = preview?.showImage ?? true;
+const showMeta = preview?.showMeta ?? true;
+const showTags = preview?.showTags ?? true;
+const showBadge = preview?.showBadge ?? true;
 const tilt = tiltStyle(hashTilt(id));
 // Page-scoped: home and /work/ never share a name, so the card peels on one
 // page and is pinned on the other instead of morphing between them.
@@ -22,39 +30,45 @@ const vtName = viewName(Astro.url.pathname, `work-${id}`);
   style={`${tilt}; --vt-name: ${vtName};`}
 >
   {
-    data.cover ? (
-      <img
-        class="card__media"
-        src={data.cover}
-        alt=""
-        width="1200"
-        height="750"
-        loading="lazy"
-        decoding="async"
-      />
-    ) : (
-      <span class="card__media card__media--empty" aria-hidden="true" />
-    )
+    showImage ? (
+      image ? (
+        <img
+          class="card__media"
+          src={image}
+          alt=""
+          width="1200"
+          height="750"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span class="card__media card__media--empty" aria-hidden="true" />
+      )
+    ) : null
   }
 
   <div class="card__body">
-    <div class="card__meta">
-      <span>{data.year}</span>
-      {data.client ? <span aria-hidden="true">·</span> : null}
-      {data.client ? <span>{data.client}</span> : null}
-      {data.protected ? (
-        <span class="lock-badge prop"><LockIcon size={11} /> Protected</span>
-      ) : null}
-    </div>
+    {
+      showMeta && (
+        <div class="card__meta">
+          <span>{data.year}</span>
+          {data.client ? <span aria-hidden="true">·</span> : null}
+          {data.client ? <span>{data.client}</span> : null}
+        </div>
+      )
+    }
+    {showBadge && data.protected ? (
+      <span class="lock-badge prop"><LockIcon size={11} /> Protected</span>
+    ) : null}
 
     <h3 class="card__title">
-      <a href={`/work/${id}/`}>{data.title}</a>
+      <a href={`/work/${id}/`}>{title}</a>
     </h3>
 
-    {!compact && <p class="card__summary">{data.summary}</p>}
+    {!compact && <p class="card__summary">{summary}</p>}
 
     {
-      data.tags.length > 0 && (
+      showTags && data.tags.length > 0 && (
         <ul role="list" class="card__tags">
           {data.tags.map((tag) => (
             <li class="tag prop">{tag}</li>

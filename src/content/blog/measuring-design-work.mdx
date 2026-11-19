@@ -7,36 +7,66 @@ tags:
   - Research
 ---
 
-There's a version of design measurement that goes like this: instrument everything, build a dashboard, watch the lines go up and to the right, and get credit for the quarter. I've never seen it work, for a simple reason — the numbers that move on a two-week cadence are almost never the numbers a designer influenced.
+There is a version of design measurement that goes like this: instrument everything, build a
+dashboard, watch the lines move up and to the right, and take credit for the quarter. I have never
+seen it work, for a simple reason — the numbers that move on a two-week cadence are almost never
+the numbers a designer influenced.
 
-The numbers a designer influences take longer and are harder to attribute. That doesn't mean measurement is hopeless. It means the useful set is smaller than the one in the deck.
+The numbers a designer does influence take longer and are harder to attribute. That does not make
+measurement hopeless. It means the useful set is smaller than the one in the deck.
 
-## Three kinds of evidence
+<Card title="Three kinds of evidence" label="What counts" color="green">
 
-**Behaviour you can watch.** Time on task, completion rate, error rate, number of support tickets per feature. These are instrumentable, comparable, and honest. They also usually need a baseline you didn't collect, which is the part everyone skips.
+1. **Behaviour you can watch.** Time on task, completion, errors, support tickets per feature.
+   Honest and comparable — and usually needs a baseline nobody collected.
+2. **Judgement you can ask for.** Post-task confidence, "would you do this again?", "did you know
+   what to do next?" Self-reported and soft, until six reviewers say the same thing.
+3. **Decisions you can point at.** "We shipped inline annotation because five of six reviewers
+   annotated manually in testing, and the sixth asked for the feature." That is reviewable in a way
+   that a 3% lift is not.
 
-**Judgement you can ask for.** Post-task confidence. "Would you do this again?" "Did you know what to do next?" Self-reported and therefore soft, but when six reviewers in a row say the same thing, it's a signal worth acting on.
+</Card>
 
-**Decisions you can point at.** This one is underrated. "We shipped the inline annotation because five of six reviewers annotated manually in testing, and the sixth asked for the feature." That's a design decision with evidence attached, and it's reviewable in a way that a 3% lift is not.
+I stopped reporting numbers whose mechanism I could not explain. If I cannot say why the number
+should move — through which behaviour, for which user, at which step — the correlation is
+decoration. I also stopped treating any single number as the outcome. Time on task can improve
+because the interface got faster or because people gave up sooner.
 
-## What I stopped doing
+<LooseCard title="A worked example" color="cream">
 
-I stopped reporting metrics I couldn't explain the mechanism for. If I can't describe why the number should move — through which behaviour, for which user, at which step — then the correlation is decoration.
+On a contract review project we reported three things: median time to first decision before and
+after, the number of panels in the default view, and post-task reviewer confidence on a five-point
+scale. Each number had a mechanism, a comparison, and a limit.
 
-I also stopped treating a single number as the outcome. Time-on-task can improve because the interface got faster or because users gave up sooner. Confidence can improve because the task got easier or because we asked nicer questions. Every metric needs a second reading, ideally qualitative.
+<MetricGrid
+  items={[
+    { value: '41%', label: 'faster first decision', note: 'median, 24 sessions' },
+    { value: '9 → 2', label: 'panels in the default view', note: 'we controlled this directly' },
+    { value: '3.1 → 4.4', label: 'reviewer confidence', note: 'post-task, five-point scale' }
+  ]}
+/>
 
-## A worked example
+The first was the headline. The second was the one we could actually take credit for. The third
+explained why the first was not just people clicking faster.
 
-On a contract review project, we reported three things:
+</LooseCard>
 
-- Median time to first decision, before and after.
-- Panel count in the default view — a structural number we controlled directly.
-- Reviewer confidence, post-task, on a five-point scale.
+<Quote attribution="A sceptical VP of Product">
 
-The first was the headline. The second was the one we could actually take credit for. The third was the one that explained why the first wasn't just people clicking faster.
+None of these numbers required a dashboard. Each one had a mechanism, a comparison, and a limit.
 
-That combination survived a review with a sceptical VP of Product because each number had a mechanism, a comparison, and a limit. None of them required a dashboard.
+</Quote>
 
-## The honest summary
+<Callout label="Honest summary" title="The discipline is not overclaiming" tone="blue">
 
-Design measurement is mostly the discipline of not overclaiming. Pick a small set of numbers, know what they can and can't tell you, pair them with what people said, and be explicit about the mechanism. The dashboard is optional. The mechanism is not.
+Pick a small set of numbers. Know what they can and cannot tell you. Pair them with what people
+said, and be explicit about the mechanism. The dashboard is optional; the mechanism is not.
+
+</Callout>
+
+<EntryFooter href="/blog/" label="Read more posts">
+  <p>
+    Written by Logan Willans. Replies and corrections are welcome at
+    <a href="mailto:design@brainvat.xyz">design@brainvat.xyz</a>.
+  </p>
+</EntryFooter>
